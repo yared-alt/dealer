@@ -1,0 +1,180 @@
+"use client";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Menu, X, Mail, MapPin, Phone } from "lucide-react";
+import Image from "next/image";
+
+const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [prevScroll, setPrevScroll] = useState<number>(0)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const CurrrentScroll = window.scrollY;
+      const scrollUp = CurrrentScroll < (prevScroll);
+
+      if (scrollUp) {
+        setIsScrolled(false);
+      } else if (CurrrentScroll > 100) {
+        setIsScrolled(true);
+      }
+      setPrevScroll(CurrrentScroll)
+    };
+    setPrevScroll(window.scrollY)
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prevScroll]);
+
+  return (
+    <header
+      className={`fixed  w-full z-50 transition-all  duration-1000 h-auto  ${isScrolled ? "translate-y-0 bg-yellow-100 backdrop-blur-md shadow-sm text-amber-950" : "bg-yellow-50 "
+        }`}
+    >
+      <div className="container lg:px-16 mx-auto ">
+        <div className="hidden md:block">
+
+        <div
+            className={`transition-all duration-500 ${isScrolled ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-auto"
+            } w-full border-b border-black hidden md:flex justify-between container mx-auto px-0 lg:scroll-px-4`}
+          >
+            <div
+              className="text-2xl font-bold h-11 py-2 "
+            >
+              <Image
+                src={"/Wolisohotellogo.svg"}
+                alt="Woliso Hotel"
+                width={200}
+                height={50}
+              />
+            </div>
+
+            <div className="">
+              <div className="text-center md:text-right text-sm text-gray-600">
+                <p className="mb-4">Woliso Town, Oromia | Ethiopia</p>
+                <div className="flex flex-col md:flex-row md:justify-end gap-4 md:gap-8">
+                  <Link href="tel:+35020079000" className="flex items-center justify-center md:justify-end gap-2 hover:text-gray-900 transition-colors">
+                    <Phone size={16} />
+                    <span>+251 115 511 417 </span>
+                  </Link>
+
+                  <Link href="#" className="flex items-center justify-center md:justify-end gap-2 hover:text-gray-900 transition-colors">
+                    <Mail size={16} />
+                    <span>Email us</span>
+                  </Link>
+
+                  <Link href="#" className="flex items-center justify-center md:justify-end gap-2 hover:text-gray-900 transition-colors">
+                    <MapPin size={16} />
+                    <span>Directions</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+   
+
+      <div className="flex md:px-9 pt-6 md:pt-9 pb-3 md:flex-col justify-between bg-white  sm:bg-transparent align-middle  lg:flex-row ">
+          <div className="flex-shrink-0  w-auto my-auto ">
+            <Link href="/" className="text-2xl font-bold">
+              <Image
+              src={"/Wolisohotellogo.svg"}
+              alt="Woliso Hotel"
+              width={200}
+              height={50}
+            />
+          </Link>
+        </div>
+
+          <nav className="hidden md:flex w-[100%] lg:pl-5 justify-between items-center space-x-8 sm:space-x-4">
+            <div className={`space-x-8 md:space-x-4 lg:space-x-8 border-1 border-transparent pb-2 flex md:justify-self-start  justify-center w-[80%] ${isScrolled ? "" : "border-b-amber-400"
+              }`}>
+
+            <Link href="/" className={` hover:text-amber-400 transition-colors ${isScrolled ? " text-amber-950" : "text-cyan-950"
+              }`}>
+              Home
+            </Link>
+
+            <Link href="/collection" className={`hover:text-amber-400 transition-colors ${isScrolled ? " text-amber-950" : "text-cyan-950"
+              }`}>
+              Collections
+            </Link>
+            <Link href="/contact" className={`hover:text-amber-400 transition-colors ${isScrolled ? " text-amber-950" : "text-cyan-950"
+              }`}>
+              Contact-us
+            </Link>
+            <Link href="/aboutus" className={`hover:text-amber-400 transition-colors ${isScrolled ? " text-amber-950" : "text-cyan-950"
+              }`}>
+              About-us
+            </Link>
+          </div>
+          <div className="hidden md:flex sm:ml-6  md:ml-6 lg:ml-10 items-center space-x-3">
+
+            <Link
+              href="/signup"
+              className="px-4 py-2 rounded-md bg-amber-500 text-white font-medium hover:bg-amber-600 transition-colors"
+            >
+              Signup
+            </Link>
+          </div>
+        </nav>
+
+        </div>
+        {/* Mobile Menu Button */}
+        <div className="flex items-center md:hidden">
+          <button
+            className="p-2 rounded-md text-white"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6 text-black" />
+            ) : (
+              <Menu className="h-6 w-6 text-black" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden h-screen flex flex-col justify-between  bg-white shadow-lg">
+          <div className="px-2 pt-2 pb-3 text-center space-y-1 sm:px-3">
+            <Link
+              onClick={() => setIsMobileMenuOpen(false)}
+              href="/"
+              className="block px-3 py-2 text-gray-800 hover:bg-amber-50 hover:text-amber-500">
+              Home
+            </Link>
+
+            <Link
+              onClick={() => setIsMobileMenuOpen(false)}
+              href="/collection" className="block px-3 py-2 text-gray-800 hover:bg-amber-50 hover:text-amber-500">
+              Collections
+            </Link>
+            <Link
+              onClick={() => setIsMobileMenuOpen(false)}
+              href="/contact" className="block px-3 py-2 text-gray-800 hover:bg-amber-50 hover:text-amber-500">
+              Contact-us
+            </Link>
+            <Link href="/aboutus" className="block px-3 py-2 text-gray-800 hover:bg-amber-50 hover:text-amber-500">
+              About-us
+            </Link>
+            <Link
+              onClick={() => setIsMobileMenuOpen(false)}
+              href="/signup"
+              className="block px-3 py-2 text-white bg-amber-500 hover:bg-amber-600 rounded-md"
+            >
+              Signup
+            </Link>
+          </div>
+          <div className="border-t-2 h-32 text-center border-black">
+            <p className="items-baseline">designedby yared</p>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default Navbar;
