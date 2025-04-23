@@ -8,6 +8,7 @@ import {
   Save,
   Star,
 } from "lucide-react";
+import { Car } from "@/app/dashboard/page";
 
 const DEFAULT_IMG = "/bff0fbea-2ff6-492f-94a5-7074eaa101b7.png";
 const CAR_CATEGORIES = ["SUV", "Sedan", "Hatchback", "Truck", "Convertible"];
@@ -22,35 +23,33 @@ const TRANSMISSIONS = ["Manual", "Automatic", "Semi-automatic"];
 const YEARS = Array.from({ length: 35 }, (_, i) => `${1990 + i}`);
 const SUBCATEGORIES = ["Premium", "Standard", "Budget", "Family", "Sport"];
 
-const page = () => {
-  // General fields
-  const [carName, setCarName] = useState("");
-  const [carBrand, setCarBrand] = useState("");
-  const [model, setModel] = useState("");
-  const [mileGone, setMileGone] = useState("");
-  const [category, setCategory] = useState(CAR_CATEGORIES[0]);
-  const [subCategory, setSubCategory] = useState(SUBCATEGORIES[0]);
-  const [discountedAmount, setDiscountedAmount] = useState("");
-  const [warrantyGiven, setWarrantyGiven] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [fuelType, setFuelType] = useState(FUEL_TYPES[0]);
-  const [color, setColor] = useState(COLORS[0]);
-  const [size, setSize] = useState(SIZES[0]);
-  const [condition, setCondition] = useState(CONDITIONS[0]);
-  const [transmission, setTransmission] = useState(TRANSMISSIONS[0]);
-  const [silinder, setSilinder] = useState("");
-  const [year, setYear] = useState(YEARS[YEARS.length - 1]);
-  const [isNew, setIsNew] = useState(false);
-  const [review, setReview] = useState("");
-  const [isPopular, setIsPopular] = useState(false);
-  const [inStock, setInStock] = useState(false);
+const page = (data:Car) => {
+  const [carName, setCarName] = useState(data.CarName);
+  const [carBrand, setCarBrand] = useState(data.CarBrand);
+  const [model, setModel] = useState(data.Model);
+  const [mileGone, setMileGone] = useState(data.MileGone);
+  const [category, setCategory] = useState(data.Catagory);
+  const [subCategory, setSubCategory] = useState(data.SubCategory);
+  const [discountedAmount, setDiscountedAmount] = useState(data.DiscountedAmount);
+  const [warrantyGiven, setWarrantyGiven] = useState(data.WarrantyGiven);
+  const [description, setDescription] = useState(data.Description);
+  const [price, setPrice] = useState(data.Price);
+  const [fuelType, setFuelType] = useState(data.FuelType);
+  const [color, setColor] = useState(data.Color);
+  const [size, setSize] = useState(data.Size);
+  const [condition, setCondition] = useState(data.Condition);
+  const [transmission, setTransmission] = useState(data.Transmission);
+  const [silinder, setSilinder] = useState(data.Silinder);
+  const [year, setYear] = useState(data.Year);
+  const [isNew, setIsNew] = useState(data.IsNew);
+  const [review, setReview] = useState(data.Review);
+  const [isPopular, setIsPopular] = useState(data.IsPopular);
+  const [inStock, setInStock] = useState(data.InStock);
 
-  // Image states
-  const [frontImagee, setFrontImage] = useState(DEFAULT_IMG);
+  const [frontImagee, setFrontImage] = useState(data.FrontImage);
   const [frontImageFile, setFrontImageFile] = useState<File | null>(null);
   const [supportImages, setSupportImages] = useState<string[]>([
-    DEFAULT_IMG, DEFAULT_IMG, DEFAULT_IMG
+    data.SupportImages.join(",")
   ]);
   const [supportImageFiles, setSupportImageFiles] = useState<(File | null)[]>([
     null,
@@ -58,7 +57,6 @@ const page = () => {
     null,
   ]);
 
-  // Image preview handlers
   const handleFrontImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -140,14 +138,12 @@ const Instock= formdata.get("inStock")
 console.log(supportImages)
 
     try {
-        const response=await fetch("/api/upload",{method:"POST",body: finalFormData})
+        const response=await fetch("/api/edit",{method:"POST",body: finalFormData})
         console.log(response)
-        window.alert("Product uploaded (demo only)");
     } catch (error) {
-      console.error(error);
-      window.alert("Network error");
-      // the connection feliour on mongo is not handled remember
+        console.error(error);
     }
+    window.alert("Product uploaded (demo only).");
   };
 
   return (
@@ -169,7 +165,7 @@ console.log(supportImages)
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition"
             >
               <Check className="h-4 w-4" />
-              Submit Product
+              Edit Product
             </button>
           </div>
         </div>
@@ -206,7 +202,6 @@ console.log(supportImages)
                     required
                   />
                 </div>
-
                 <div>
                   <label className="block text-xs text-gray-500 mb-1 font-bold" htmlFor="model">
                     Model
@@ -231,7 +226,7 @@ console.log(supportImages)
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={year}
                     required
-                    onChange={e => setYear(e.target.value)}
+                    onChange={e => setYear(Number(e.target.value))}
                   >
                     {YEARS.map(y => (
                       <option key={y} value={y}>{y}</option>
@@ -354,7 +349,7 @@ console.log(supportImages)
                     required
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={silinder}
-                    onChange={e => setSilinder(e.target.value)}
+                    onChange={e => setSilinder(Number(e.target.value))}
                     placeholder="e.g. 4"
                   />
                 </div>
@@ -386,7 +381,7 @@ console.log(supportImages)
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     type="number"
                     value={mileGone}
-                    onChange={e => setMileGone(e.target.value)}
+                    onChange={e => setMileGone(Number(e.target.value))}
                     placeholder="e.g. 15000"
                   />
                 </div>
@@ -414,7 +409,7 @@ console.log(supportImages)
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     type="number"
                     value={discountedAmount}
-                    onChange={e => setDiscountedAmount(e.target.value)}
+                    onChange={e => setDiscountedAmount(Number(e.target.value))}
                     placeholder="e.g. 3000"
                   />
                 </div>
@@ -435,7 +430,7 @@ console.log(supportImages)
                     type="number"
                     value={price}
                     required
-                    onChange={e => setPrice(e.target.value)}
+                    onChange={e => setPrice(Number(e.target.value))}
                     placeholder="e.g. 15000"
                   />
                 </div>
@@ -449,7 +444,7 @@ console.log(supportImages)
                     name="review" 
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={review}
-                    onChange={e => setReview(e.target.value)}
+                    onChange={e => setReview(Number(e.target.value))}
                     placeholder="e.g. 4.5/5"
                   />
                 </div>
