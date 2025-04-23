@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import Product from "@/model/carModel";
+import Car from "@/lib/model/carModel";
 import { connect } from "@/lib/config/dbconfig";
 
 cloudinary.config({
@@ -12,6 +12,12 @@ cloudinary.config({
 interface CloudinaryResult {
   public_id: string,
   [key: string]: any,
+}
+
+function stringToBoolean(str) {
+  if (typeof str === "boolean") return str;
+  if (typeof str !== "string") return false;
+  return str.toLowerCase() === "true";
 }
 
 export async function POST(request: NextRequest) {
@@ -38,13 +44,13 @@ export async function POST(request: NextRequest) {
     const transmission=formdata.get("transmission");
     const silinder=formdata.get("silinder");
     const year=formdata.get("year");
-    const isNew = formdata.get("new");
-    const IsPopular = formdata.get("Popular");
+    const isNew = formdata.get("isnew");
+    const IsPopular = formdata.get("isPopular");
     const Instock = formdata.get("Instock");
     var FrontimagePublic_id;
     var OtherimagesPublic_id:string[] = [];
 
-    // console.log(name,price,description,isNew,IsPopular,colors,sizes,FrontImagefile,otherImages,catagory,Instock)
+    console.log(brandname,price,description,isNew,IsPopular,color,size,FrontImagefile,supportImages,catagory,Instock)
 
     if (!FrontImagefile || !brandname || !catagory || !price || !description || color || !size) {
       console.log("Incommplete data")
@@ -120,7 +126,7 @@ export async function POST(request: NextRequest) {
     // return;
     try {
       connect();
-      const product = new Product({
+      const product = new Car({
         CarBrand: brandname,
         CarName:carname,
         FrontImage:frontPic.toString(),
@@ -130,20 +136,20 @@ export async function POST(request: NextRequest) {
         SubCatagory:subcatagory,
         WarrantyGiven:warranty,
         Model:model,
-        MileGone:milegone,
+        MileGone:Number(milegone),
         Description: description,
-        Price: price,
+        Price: Number(price),
         Color: color,
         Condition:condition,
-        Silinder:silinder,
+        Silinder:Number(silinder),
         Year:year,
         Transmission:transmission,
-        DiscountedAmount:discountedamount,
+        DiscountedAmount:Number(discountedamount),
         FuelType:fueltype,
         Size:size,
-        IsNew:isNew,
-        IsPopular:IsPopular,
-        InStock: Instock,
+        IsNew:stringToBoolean(isNew),
+        IsPopular:stringToBoolean(IsPopular),
+        InStock: stringToBoolean(Instock),
       })
       await product.save();
       return NextResponse.json({ message: "Car is registered sucsessfuly" }, { status: 200 })

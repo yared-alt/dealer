@@ -8,21 +8,21 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-3 py-10 gap-8">
           <div>
-            <h3 className="text-base font-semibold text-gray-800 mb-4">NEEREST DESTINITION</h3>
+            <h3 className="text-base font-semibold text-gray-800 mb-4">CHOOSE YOUR BRAND</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
-                  Wonchi Lake
+                 TOYOTA
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
-                  Negash Resort
+                 BYD
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
-                  Woliso Hotel
+                  BMW
                 </Link>
               </li>
             </ul>
@@ -44,10 +44,10 @@ export function Footer() {
           </div>
 
           <div className="border-l border-gray-200 pl-6 hidden md:block">
-            <h3 className=" font-bold text-gray-800  my-4">WolisohotelHOTEL.COM</h3>
+            <h3 className=" font-bold text-gray-800  my-4">amanuelcardealer.COM</h3>
             <Image
               src={'/Wolisohotellogo.svg'}
-              alt="Woliso Hotel"
+              alt="Amanuel car dealer"
               width={150}
               height={50}
               />

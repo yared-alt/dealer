@@ -6,7 +6,7 @@ const CarSchema = new mongoose.Schema({
     CarName: { type: String, required: [true, "car name is not stated"] },
     CarBrand: { type: String, required: [true, "car brand name is not stated"] },
     Model: { type: String, required: [true, "car model is not stated"] },
-    MileGone: { type: Number, default: 0o0 },
+    MileGone: { type: Number, default: 0 },
     Catagory: { type: String, required: [true, "category is not stated"] },
     SubCatagory: { type: String, required: [true, "Subcategory is not stated"] },
     WarrantyGiven: { type: String },
@@ -21,9 +21,11 @@ const CarSchema = new mongoose.Schema({
     Color: { type: String },
     FuelType: { type: String },
     IsNew: { type: Boolean, default: true },
-    Review: { type: Number },
+    Review: { type: Number, default:3 },
     IsPopular: { type: Boolean, default: false },
     InStock: { type: Boolean, default: true }
 });
 
-export const Car = mongoose.models.Car || mongoose.model("Car", CarSchema);
+ const Car = mongoose.models.Car || mongoose.model("Car", CarSchema);
+
+ export default Car;

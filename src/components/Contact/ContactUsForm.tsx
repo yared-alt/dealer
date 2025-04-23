@@ -99,15 +99,19 @@ const ContactForm = () => {
               />
             </div>
             <div>
-              <input
-                type="text"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                placeholder="Subject"
-                required
-                className="w-full p-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <select
+              name='subject'
+              value={formData.subject}
+              onChange={()=>handleChange}
+              required
+              className='w-full p-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              >
+                <option disabled >select subject</option>
+                <option>Ask for car import</option>
+                <option>Ask for payment option</option>
+                <option>Ask warrenty</option>
+                <option>Other</option>
+              </select>
             </div>
             <div>
               <input

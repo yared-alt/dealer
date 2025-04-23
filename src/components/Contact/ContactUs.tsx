@@ -1,8 +1,6 @@
+import React from 'react'
 import { Phone, Mail, MapPin } from 'lucide-react';
 import ContactForm from "./ContactUsForm";
-
-
-import React from 'react'
 
 function ContactUs() {
   return (
@@ -11,7 +9,6 @@ function ContactUs() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center md:text-right text-sm text-gray-600">
             <p className="mb-4">Kirkos, Addis Ababa | Ethiopia </p>
-
             <div className="flex flex-col md:flex-row md:justify-end gap-4 md:gap-8">
               <a href="tel:+35020079000" className="flex items-center justify-center md:justify-end gap-2 hover:text-gray-900 transition-colors">
                 <Phone size={16} />

@@ -44,7 +44,7 @@ const Navbar = () => {
             >
               <Image
                 src={"/Wolisohotellogo.svg"}
-                alt="Woliso Hotel"
+                alt="Amanuel dealer"
                 width={200}
                 height={50}
               />
@@ -80,7 +80,7 @@ const Navbar = () => {
             <Link href="/" className="text-2xl font-bold">
               <Image
               src={"/Wolisohotellogo.svg"}
-              alt="Woliso Hotel"
+              alt="Amanuel dealer"
               width={200}
               height={50}
             />
