@@ -1,19 +1,33 @@
 import mongoose from "mongoose";
 
-export async function connect() {
+interface ConnectionResult {
+  success: boolean;
+  error?: string;
+}
 
-    try {
-        mongoose.set('bufferTimeoutMS', 50000);
-        mongoose.connect(process.env.MONGODB_URI!)
- 
-        const connection=mongoose.connection;
-        connection.on("connected",()=>{
-            console.log("db connected succefuly")
-        });
-        connection.on("error",(err)=>{
-            console.log("error on connecting db", err)
-        })
-    } catch (err) {
-        console.log(err)
-    }
+export async function connect(): Promise<ConnectionResult> {
+  try {
+    mongoose.set('bufferTimeoutMS', 50000);
+    const connectionPromise = mongoose.connect(process.env.MONGODB_URI!);
+    const connection = mongoose.connection;
+    
+    connection.on("connected", () => {
+      console.log("DB connected successfully");
+    });
+
+    connection.on("error", (err) => {
+      return { 
+        success: false, 
+        error: "MongoDB connection error" 
+      };
+    });
+    await connectionPromise;
+    return { success: true };
+
+  } catch (err) {
+    return { 
+      success: false, 
+      error: "Failed to connect to database" 
+    };
+  }
 }

@@ -23,7 +23,7 @@ const YEARS = Array.from({ length: 35 }, (_, i) => `${1990 + i}`);
 const SUBCATEGORIES = ["Premium", "Standard", "Budget", "Family", "Sport"];
 
 const page = () => {
-  // General fields
+  const [loading, setLoading] = useState(false)
   const [carName, setCarName] = useState("");
   const [carBrand, setCarBrand] = useState("");
   const [model, setModel] = useState("");
@@ -46,7 +46,6 @@ const page = () => {
   const [isPopular, setIsPopular] = useState(false);
   const [inStock, setInStock] = useState(false);
 
-  // Image states
   const [frontImagee, setFrontImage] = useState(DEFAULT_IMG);
   const [frontImageFile, setFrontImageFile] = useState<File | null>(null);
   const [supportImages, setSupportImages] = useState<string[]>([
@@ -58,7 +57,6 @@ const page = () => {
     null,
   ]);
 
-  // Image preview handlers
   const handleFrontImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -78,75 +76,79 @@ const page = () => {
     setSupportImageFiles(newFiles);
   };
 
-  const handleFormSubmit = async(e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   
+
     const formdata = new FormData(e.currentTarget as HTMLFormElement);
     console.log(Object.fromEntries(formdata.entries()));
     console.log(formdata.get("price"))
 
-console.log("fileq1,",frontImageFile)
-console.log("no",supportImageFiles)
+    console.log("fileq1,", frontImageFile)
+    console.log("no", supportImageFiles)
 
-const finalFormData=new FormData()
+    const finalFormData = new FormData()
 
 
-const brandname= formdata.get("carBrand")
-const carname= formdata.get("carName")
-const catagory= formdata.get("catagory")
-const price= formdata.get("price")
-const description= formdata.get("")
-const color= formdata.get("color")
-const size= formdata.get("size")
-const model= formdata.get("model")
-const discount= formdata.get("discountedAmount")
-const subcatagory= formdata.get("subCategory")
-const warranty= formdata.get("warrantyGiven")
-const fuel= formdata.get("fuelType")
-const milegone= formdata.get("mileGone")
-const condition= formdata.get("condition")
-const transmission= formdata.get("transmission")
-const silinder= formdata.get("silinder")
-const year= formdata.get("year")
-const isnew= formdata.get("isNew")
-const isPopular= formdata.get("isPopular")
-const Instock= formdata.get("inStock")
+    const brandname = formdata.get("carBrand")
+    const carname = formdata.get("carName")
+    const catagory = formdata.get("catagory")
+    const price = formdata.get("price")
+    const description = formdata.get("")
+    const color = formdata.get("color")
+    const size = formdata.get("size")
+    const model = formdata.get("model")
+    const discount = formdata.get("discountedAmount")
+    const subcatagory = formdata.get("subCategory")
+    const warranty = formdata.get("warrantyGiven")
+    const fuel = formdata.get("fuelType")
+    const milegone = formdata.get("mileGone")
+    const condition = formdata.get("condition")
+    const transmission = formdata.get("transmission")
+    const silinder = formdata.get("silinder")
+    const year = formdata.get("year")
+    const isnew = formdata.get("isNew")
+    const isPopular = formdata.get("isPopular")
+    const Instock = formdata.get("inStock")
 
- finalFormData.append("frontImage",frontImageFile as File)
- supportImageFiles.forEach((file,i)=>{if (file) {
-     finalFormData.append("otherImages",file)
- }})
- finalFormData.append("brandname",brandname as string)
- finalFormData.append("carname",carname as string)
- finalFormData.append("catagory",catagory as string)
- finalFormData.append("price",price as string)
- finalFormData.append("description",description as string)
- finalFormData.append("color",color as string)
- finalFormData.append("size",size as string)
- finalFormData.append("model",model as string)
- finalFormData.append("discount",discount as string)
- finalFormData.append("subcatagory",subcatagory as string)
- finalFormData.append("warranty",warranty as string)
- finalFormData.append("fuel",fuel as string)
- finalFormData.append("milegone",milegone as string)
- finalFormData.append("condition",condition as string)
- finalFormData.append("transmission",transmission as string)
- finalFormData.append("silinder",silinder as string)
- finalFormData.append("year",year as string)
- finalFormData.append("isnew",isnew as string)
- finalFormData.append("isPopular",isPopular as string)
- finalFormData.append("Instock",Instock as string)
+    finalFormData.append("frontImage", frontImageFile as File)
+    supportImageFiles.forEach((file, i) => {
+      if (file) {
+        finalFormData.append("otherImages", file)
+      }
+    })
+    finalFormData.append("brandname", brandname as string)
+    finalFormData.append("carname", carname as string)
+    finalFormData.append("catagory", catagory as string)
+    finalFormData.append("price", price as string)
+    finalFormData.append("description", description as string)
+    finalFormData.append("color", color as string)
+    finalFormData.append("size", size as string)
+    finalFormData.append("model", model as string)
+    finalFormData.append("discount", discount as string)
+    finalFormData.append("subcatagory", subcatagory as string)
+    finalFormData.append("warranty", warranty as string)
+    finalFormData.append("fuel", fuel as string)
+    finalFormData.append("milegone", milegone as string)
+    finalFormData.append("condition", condition as string)
+    finalFormData.append("transmission", transmission as string)
+    finalFormData.append("silinder", silinder as string)
+    finalFormData.append("year", year as string)
+    finalFormData.append("isnew", isnew as string)
+    finalFormData.append("isPopular", isPopular as string)
+    finalFormData.append("Instock", Instock as string)
 
-console.log(supportImages)
-
+    console.log(supportImages)
     try {
-        const response=await fetch("/api/upload",{method:"POST",body: finalFormData})
-        console.log(response)
-        window.alert("Product uploaded (demo only)");
+      setLoading(true)
+      const response = await fetch("/api/upload", { method: "POST", body: finalFormData })
+      console.log(response)
+      window.alert("Product uploaded (demo only)");
     } catch (error) {
       console.error(error);
       window.alert("Network error");
       // the connection feliour on mongo is not handled remember
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -164,13 +166,26 @@ console.log(supportImages)
             <h1 className="text-2xl font-bold text-gray-900">Upload Car Product</h1>
           </div>
           <div className="flex gap-3 mt-3 md:mt-0">
-            <button
-              type="submit"
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition"
-            >
-              <Check className="h-4 w-4" />
-              Submit Product
-            </button>
+            {
+              loading ? (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition"
+                >
+                  <Check className="h-4 w-4" />
+                  Submiting ...
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition"
+                >
+                  <Check className="h-4 w-4" />
+                  Submit Product
+                </button>
+              )
+            }
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
@@ -198,7 +213,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="carbrand"
-                    name="carBrand" 
+                    name="carBrand"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={carBrand}
                     onChange={e => setCarBrand(e.target.value)}
@@ -213,7 +228,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="model"
-                    name="model" 
+                    name="model"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={model}
                     onChange={e => setModel(e.target.value)}
@@ -227,7 +242,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="year"
-                    name="year" 
+                    name="year"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={year}
                     required
@@ -244,7 +259,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="category"
-                    name="category" 
+                    name="category"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={category}
                     onChange={e => setCategory(e.target.value)}
@@ -260,7 +275,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="subcategory"
-                    name="subCategory" 
+                    name="subCategory"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={subCategory}
                     onChange={e => setSubCategory(e.target.value)}
@@ -282,7 +297,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="fuel"
-                    name="fuelType" 
+                    name="fuelType"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={fuelType}
                     onChange={e => setFuelType(e.target.value)}
@@ -299,7 +314,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="color"
-                    name="color" 
+                    name="color"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={color}
                     required
@@ -316,7 +331,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="size"
-                    name="size" 
+                    name="size"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={size}
                     required
@@ -333,7 +348,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="transmission"
-                    name="transmission" 
+                    name="transmission"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={transmission}
                     required
@@ -350,7 +365,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="silinder"
-                    name="silinder" 
+                    name="silinder"
                     required
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={silinder}
@@ -364,7 +379,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="condition"
-                    name="condition" 
+                    name="condition"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={condition}
                     required
@@ -381,7 +396,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="milegone"
-                    name="mileGone" 
+                    name="mileGone"
                     required
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     type="number"
@@ -396,7 +411,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="warranty"
-                    name="warrantyGiven" 
+                    name="warrantyGiven"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={warrantyGiven}
                     required
@@ -410,7 +425,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="discountedamt"
-                    name="discountedAmount" 
+                    name="discountedAmount"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     type="number"
                     value={discountedAmount}
@@ -430,7 +445,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="price"
-                    name="price" 
+                    name="price"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     type="number"
                     value={price}
@@ -446,7 +461,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="review"
-                    name="review" 
+                    name="review"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={review}
                     onChange={e => setReview(e.target.value)}
@@ -457,7 +472,7 @@ console.log(supportImages)
                   <label className="inline-flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      name="isNew" 
+                      name="isNew"
                       checked={isNew}
                       onChange={e => setIsNew(e.target.checked)}
                       className="accent-green-600 h-4 w-4"
@@ -467,7 +482,7 @@ console.log(supportImages)
                   <label className="inline-flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      name="isPopular" 
+                      name="isPopular"
                       checked={isPopular}
                       onChange={e => setIsPopular(e.target.checked)}
                       className="accent-blue-600 h-4 w-4"
@@ -477,7 +492,7 @@ console.log(supportImages)
                   <label className="inline-flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      name="inStock" 
+                      name="inStock"
                       checked={inStock}
                       onChange={e => setInStock(e.target.checked)}
                       className="accent-teal-600 h-4 w-4"
@@ -501,7 +516,7 @@ console.log(supportImages)
                   Upload
                   <input
                     id="front-image-upload"
-                    name="frontImage" 
+                    name="frontImage"
                     type="file"
                     className="hidden"
                     accept="image/png,image/jpeg"
@@ -534,7 +549,7 @@ console.log(supportImages)
                       />
                       <input
                         id={`support-image-upload-${idx}`}
-                        name={`supportImage${idx}`} 
+                        name={`supportImage${idx}`}
                         type="file"
                         className="hidden"
                         accept="image/png,image/jpeg"
@@ -555,7 +570,7 @@ console.log(supportImages)
             </label>
             <textarea
               id="description"
-              name="description" 
+              name="description"
               className="w-full rounded-md border border-gray-200 px-3 py-2 min-h-[100px] bg-gray-100 text-gray-800"
               value={description}
               onChange={e => setDescription(e.target.value)}

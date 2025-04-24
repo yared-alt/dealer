@@ -1,5 +1,6 @@
 import React from 'react';
 import Form from "@/components/Form";
+import { Car } from '../page';
 
 async function Page({ params }: {
   params: { id: string }}) {
@@ -13,22 +14,29 @@ async function Page({ params }: {
     }
     const { data } = await res.json();
 
-    const {singelcar,relatedcars}=data
+    const singelcar:Car=data.singlecar
+    const relatedcars=data.relatedcars
 
     return (
       <div>
-        <Form data={singelcar} />
+        <Form data={singelcar},{singelcar:Car} />
       </div>
     );
   } catch (error) {
     console.error('Error fetching data:', error);
     return (
       <div>
+        
+
         <p>Error loading data. Please try again later.</p>
         <Form data={[]} />
       </div>
     );
   }
+
+
+
+  
 }
 
 export default Page;

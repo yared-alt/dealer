@@ -1,10 +1,11 @@
 import Car from "@/lib/model/carModel";
-import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
+import { connect } from "@/lib/config/dbconfig";
 
 export default async function GET(req:Request) {
 
     try {
+        connect()
         const {searchParams} = new URL(req.url)
         const id= searchParams.get("id") as string; 
         const car=await Car.findById(id).exec();

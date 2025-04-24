@@ -23,6 +23,12 @@ function stringToBoolean(str) {
 export async function POST(request: NextRequest) {
 
   try {
+
+    const response=await connect()
+    if (!response.success) {
+      console.log("response error object",response.error)
+    }
+    
     const formdata = await request.formData();
 
     const FrontImagefile = formdata.get("frontImage") as File;
@@ -50,7 +56,7 @@ export async function POST(request: NextRequest) {
     var FrontimagePublic_id;
     var OtherimagesPublic_id:string[] = [];
 
-    console.log(brandname,price,description,isNew,IsPopular,color,size,FrontImagefile,supportImages,catagory,Instock)
+    // console.log(brandname,price,description,isNew,IsPopular,color,size,FrontImagefile,supportImages,catagory,Instock)
 
     if (!FrontImagefile || !brandname || !catagory || !price || !description || color || !size) {
       console.log("Incommplete data")
@@ -109,7 +115,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       return NextResponse.json({ error: "error ocured on uploading support images" }, { status: 500 })
     }
-    // replace the slash in public_id with A so mini-commerce/ will be mini-commerceA
+    // replace the slash in public_id with A so car-folder/ will be car-folderA
     const replaceSlash = (x: any) => {
       if (Array.isArray(x)) {
         var replacedString_id:string[] = [];
@@ -125,7 +131,6 @@ export async function POST(request: NextRequest) {
     const otherPic = replaceSlash(OtherimagesPublic_id);
     // return;
     try {
-      connect();
       const product = new Car({
         CarBrand: brandname,
         CarName:carname,

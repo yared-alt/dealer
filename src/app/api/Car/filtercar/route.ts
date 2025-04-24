@@ -1,26 +1,32 @@
-import { NextApiRequest } from "next";
 import Car from "@/lib/model/carModel";
 import { NextResponse } from "next/server";
+import { connect } from "@/lib/config/dbconfig";
+import type { Car as DashboardCar } from "@/app/dashboard/page";
 
 
 
 interface Filter{
-        color?:string, 
-        category?:string, 
-        model?:number, 
-        minMileage?:number, 
-        maxMileage?:number,
-        condition?:string,
-        year?:number,
-        price?:number,
-        minPrice?:number,
-        maxPrice?:number,
-        page?:number
+  Color?:string, 
+  Catagory?:string, 
+  Model?:number, 
+  MinMileage?:number, 
+  MaxMileage?:number,
+  Condition?:string,
+  Year?:number,
+  Price?:number,
+  MinPrice?:number,
+  MaxPrice?:number,
+  Page?:number
 }
 
-export default async function GET(req:Request) {
-    try {
-    
+export async function GET(req:Request) {
+  try {
+      const response=await connect()
+      if (!response.success) {
+        console.log("response error object",response.error)
+      }
+      
+      console.log("iiii")
         const {searchParams} = new URL(req.url)
         const color=searchParams.get("color") 
         const category=searchParams.get("category") 
@@ -33,18 +39,45 @@ export default async function GET(req:Request) {
 
 
       const filter :Filter={}
-      
-      if (color) filter.color = color.toString().toLowerCase();
-      if (category) filter.category = category.toString();
-      if (model) filter.model = Number(model);
-      if (condition) filter.condition = condition.toString();
-      if (year) filter.year = Number(year);
-      if (page) filter.page = Number(page);
 
-    const [cars, totalcount] = await Promise.all([
+      color ? console.log("color",true):console.log("color",false)
+      category ? console.log("category",true):console.log("category",false)
+      condition ? console.log("condition",true):console.log("condition",false)
+      year ? console.log("year",true):console.log("year",false)
+
+      
+      if (color) filter.Color = color.toString().toLowerCase();
+      if (category) filter.Catagory = category.toString();
+      if (model) filter.Model = Number(model);
+      if (condition) filter.Condition = condition.toString();
+      if (year) filter.Year = Number(year);
+
+      console.log("filter",filter)
+    const [cars, totalcount] :[cars:DashboardCar[],totalcount:number]= await Promise.all([
         Car.find(filter).skip(skip).limit(limit),
         Car.countDocuments(filter)
       ]);
+      // const queryRes = await Car.findOne({ CarName: "toyota 20ultra" });
+      // console.log("response   ",queryRes)
+      if (totalcount == 0) {
+        // return NextResponse.json({ success: false, message: "Cars are not found" }, { status: 404 });
+      }
+
+      // construct image file
+      cars.forEach(car => {
+        // Update FrontImage (with null check)
+        if (car.FrontImage) {
+          car.FrontImage = car.FrontImage.replace("car-folderA", "car-folder/");
+        }
+      
+        // Update SupportImages array (with null/undefined check)
+        if (car.SupportImages) {
+          car.SupportImages = car.SupportImages.map(img => 
+            img ? img.replace("car-folderA", "car-folder/") : img
+          );
+        }
+      });
+      
       const totalPages = Math.ceil(totalcount / limit);
 
       console.log("cars",cars)
@@ -54,6 +87,7 @@ export default async function GET(req:Request) {
         params.set('page', newPage.toString());
         return `${req.url?.split('?')[0]}?${params.toString()}`;;
       };
+      
 
       return NextResponse.json({
         success: true,

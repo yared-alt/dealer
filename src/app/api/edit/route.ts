@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       return NextResponse.json({ error: "error ocured on uploading support images" }, { status: 500 })
     }
-    // replace the slash in public_id with A so mini-commerce/ will be mini-commerceA
+    // replace the slash in public_id with A so car-folder/ will be car-folderA
     const replaceSlash = (x: any) => {
       if (Array.isArray(x)) {
         var replacedString_id:string[] = [];
