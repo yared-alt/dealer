@@ -2,6 +2,7 @@ import Car from "@/lib/model/carModel";
 import { NextResponse } from "next/server";
 import { connect } from "@/lib/config/dbconfig";
 import type { Car as DashboardCar } from "@/app/dashboard/page";
+import buildImage from "@/helper/methods/buidImage";
 
 
 
@@ -64,19 +65,7 @@ export async function GET(req:Request) {
       }
 
       // construct image file
-      cars.forEach(car => {
-        // Update FrontImage (with null check)
-        if (car.FrontImage) {
-          car.FrontImage = car.FrontImage.replace("car-folderA", "car-folder/");
-        }
-      
-        // Update SupportImages array (with null/undefined check)
-        if (car.SupportImages) {
-          car.SupportImages = car.SupportImages.map(img => 
-            img ? img.replace("car-folderA", "car-folder/") : img
-          );
-        }
-      });
+      const r=buildImage(cars)
       
       const totalPages = Math.ceil(totalcount / limit);
 

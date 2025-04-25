@@ -14,7 +14,7 @@ export default function buildImage(car:Car|Car[]) {
             }
           });
 
-          return car;
+          return{car};
     }else{
         if (car.FrontImage) {
             car.FrontImage = car.FrontImage.replace("car-folderA", "car-folder/");
@@ -24,8 +24,6 @@ export default function buildImage(car:Car|Car[]) {
               img ? img.replace("car-folderA", "car-folder/") : img
             );
           }
-        return car;
+          return{car};
     }
-
-    
 }

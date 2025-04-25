@@ -1,13 +1,13 @@
 import React from 'react';
 import Form from "@/components/Form";
-import { Car } from '../page';
+import { Car } from '../../page';
 
 async function Page({ params }: {
   params: { id: string }}) {
   const id  = params.id;
 
   try {
-    const res = await fetch(`/api/car/findsingle?${id}`);
+    const res = await fetch(`/api/car/edit?id=${id}`);
     
     if (!res.ok) {
       throw new Error('Failed to fetch data');
@@ -19,15 +19,13 @@ async function Page({ params }: {
 
     return (
       <div>
-        <Form data={singelcar},{singelcar:Car} />
+        <Form data={singelcar} />
       </div>
     );
   } catch (error) {
     console.error('Error fetching data:', error);
     return (
       <div>
-        
-
         <p>Error loading data. Please try again later.</p>
         <Form data={[]} />
       </div>

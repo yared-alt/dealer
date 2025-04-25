@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import Car from "@/lib/model/carModel";
 import { connect } from "@/lib/config/dbconfig";
+import getsingelCar from "@/lib/utils/shared-api/getsingleCar";
+import { Car as DashboardCar } from "@/app/dashboard/page";
+import buildImage from "@/helper/methods/buidImage";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -14,16 +17,35 @@ interface CloudinaryResult {
   [key: string]: any,
 }
 
-function stringToBoolean(str:string|null):boolean {
+
+export interface GETSINGLECAR{
+  success:boolean
+  message?:string
+  singlecar?:DashboardCar
+  relatedcars?:DashboardCar[]
+}
+function stringToBoolean(str):boolean {
   if (typeof str === "boolean") return str;
   if (typeof str !== "string") return false;
   return str.toLowerCase() === "true";
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
 
-    // i will destructure the id of product
   try {
+
+    const {searchParams}=new URL(request.url)
+    const id=searchParams.get("id") as string
+
+
+    const {success,message,singlecar} = await getsingelCar(id)
+
+    if (!success) {
+      return NextResponse.json({ success: false, message: message }, { status: 404 });
+    }
+
+
+
     const formdata = await request.formData();
 
     const FrontImagefile = formdata.get("frontImage") as File;
@@ -35,10 +57,10 @@ export async function POST(request: NextRequest) {
     const description = formdata.get("description");
     const color = formdata.get("color") as string;
     const size = formdata.get("size") as string;
-    const model =formdata.get("model") as string;
-    const discountedamount=formdata.get("discount") as string;
+    const model = formdata.get("model") as string;
+    const discountedamount= formdata.get("discount") as string;
     const subcatagory= formdata.get("subcatagory") as string;
-    const warranty=formdata.get("warranty") as string;
+    const warranty= formdata.get("warranty") as string;
     const fueltype= formdata.get("fuel") as string;
     const milegone=formdata.get("milegone") as string;
     const condition=formdata.get("condition");
@@ -51,13 +73,28 @@ export async function POST(request: NextRequest) {
     var FrontimagePublic_id;
     var OtherimagesPublic_id:string[] = [];
 
-    console.log(brandname,price,description,isNew,IsPopular,color,size,FrontImagefile,supportImages,catagory,Instock)
+    // console.log(brandname,price,description,isNew,IsPopular,color,size,FrontImagefile,supportImages,catagory,Instock)
 
     if (!FrontImagefile || !brandname || !catagory || !price || !description || color || !size) {
       console.log("Incommplete data")
       // return NextResponse.json({ error: "incomplete data" }, { status: 400 })
     }
     try {
+
+        // go and change on form side the type of image to either file or string
+        // and chek it here if it is file or string
+        // const
+        const front=(typeof FrontImagefile !== "string")
+        const supportimages=supportImages.map(each=>typeof each !== "string")
+
+      if (front) {
+        // delete the front pic on clodu 
+      }
+      if(supportimages){
+        // delete all support pics on cloud
+      }
+
+
       const byte = await FrontImagefile.arrayBuffer();
       const buffer = Buffer.from(byte);
 

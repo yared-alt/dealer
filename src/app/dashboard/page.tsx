@@ -31,7 +31,7 @@ export interface Car {
   Model: string
   MileGone: number
   SupportImages: string[]
-  Catagory: string
+  Category: string
   SubCategory: string
   DiscountedAmount: number
   WarrantyGiven: string
@@ -85,14 +85,12 @@ const Page = () => {
       console.log("hiiii")
       if (res.ok) {
         const { data, pagination } = await res.json();
-
         console.log("data", data)
         console.log("paginetion", pagination)
         setProducts(data);
         setPaginetion(pagination)
         setTotalPages(pagination.totalPages);
       }
-
     } catch (error) {
       console.log("error on fetching mybe network")
       return;
@@ -102,6 +100,28 @@ const Page = () => {
   };
   useEffect(() => { fetchProducts() }, [page]);
 
+  const deleteProduct=async ()=>{
+
+    try {
+      setLoading(true)
+      const d=JSON.stringify(selectedProducts)
+      const params = new URLSearchParams({
+        d
+      });
+      const url=`api/delete?id${params}`
+      const response=await fetch(url);
+      if (!response.ok) {
+        alert("response is not ok")
+      }
+      const {message}=await response.json()
+      alert(message)
+    } catch (error) {
+      alert("cann not delete product")
+      console.log(error)
+    }finally{
+      setLoading(false)
+    }
+  }
 
   const handleCheckboxChange = (productId: string) => {
     console.log("hiiiiiiii")
