@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import Car from "@/lib/model/carModel";
 import { connect } from "@/lib/config/dbconfig";
 import getsingelCar from "@/lib/utils/shared-api/getsingleCar";
-import { Car as DashboardCar } from "@/app/dashboard/page";
-import buildImage from "@/helper/methods/buidImage";
+import { CloudinaryResult, Result } from "@/type/Car";
+import { deleteImage } from "../delete/deleteImage";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -12,19 +12,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-interface CloudinaryResult {
-  public_id: string,
-  [key: string]: any,
-}
 
-
-export interface GETSINGLECAR{
-  success:boolean
-  message?:string
-  singlecar?:DashboardCar
-  relatedcars?:DashboardCar[]
-}
-function stringToBoolean(str):boolean {
+function stringToBoolean(str): boolean {
   if (typeof str === "boolean") return str;
   if (typeof str !== "string") return false;
   return str.toLowerCase() === "true";
@@ -33,23 +22,19 @@ function stringToBoolean(str):boolean {
 export async function POST(request: Request) {
 
   try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get("id") as string
 
-    const {searchParams}=new URL(request.url)
-    const id=searchParams.get("id") as string
-
-
-    const {success,message,singlecar} = await getsingelCar(id)
+    const { success, message, singlecar } = await getsingelCar(id)
 
     if (!success) {
       return NextResponse.json({ success: false, message: message }, { status: 404 });
     }
 
-
-
     const formdata = await request.formData();
 
-    const FrontImagefile = formdata.get("frontImage") as File;
-    const supportImages = formdata.getAll("otherImages") as File[];
+    const FrontImagefile = formdata.get("frontImage") as File | string;
+    var supportImages = formdata.getAll("otherImages") as File[] | string[];
     const brandname = formdata.get("brandname") as string;
     const carname = formdata.get("carname") as string;
     const catagory = formdata.get("catagory") as string;
@@ -58,20 +43,20 @@ export async function POST(request: Request) {
     const color = formdata.get("color") as string;
     const size = formdata.get("size") as string;
     const model = formdata.get("model") as string;
-    const discountedamount= formdata.get("discount") as string;
-    const subcatagory= formdata.get("subcatagory") as string;
-    const warranty= formdata.get("warranty") as string;
-    const fueltype= formdata.get("fuel") as string;
-    const milegone=formdata.get("milegone") as string;
-    const condition=formdata.get("condition");
-    const transmission=formdata.get("transmission");
-    const silinder=formdata.get("silinder");
-    const year=formdata.get("year");
+    const discountedamount = formdata.get("discount") as string;
+    const subcatagory = formdata.get("subcatagory") as string;
+    const warranty = formdata.get("warranty") as string;
+    const fueltype = formdata.get("fuel") as string;
+    const milegone = formdata.get("milegone") as string;
+    const condition = formdata.get("condition");
+    const transmission = formdata.get("transmission");
+    const silinder = formdata.get("silinder");
+    const year = formdata.get("year");
     const isNew = formdata.get("isnew");
     const IsPopular = formdata.get("isPopular");
     const Instock = formdata.get("Instock");
     var FrontimagePublic_id;
-    var OtherimagesPublic_id:string[] = [];
+    var OtherimagesPublic_id: string[] = [];
 
     // console.log(brandname,price,description,isNew,IsPopular,color,size,FrontImagefile,supportImages,catagory,Instock)
 
@@ -81,19 +66,27 @@ export async function POST(request: Request) {
     }
     try {
 
-        // go and change on form side the type of image to either file or string
-        // and chek it here if it is file or string
-        // const
-        const front=(typeof FrontImagefile !== "string")
-        const supportimages=supportImages.map(each=>typeof each !== "string")
+      const front = (typeof FrontImagefile === "string")
+      const changedSupportImages = supportImages.filter((each,i) => typeof each === "string")
 
-      if (front) {
-        // delete the front pic on clodu 
+      const d=await getsingelCar(id);
+      const imagetobedeleted=[]
+      if (!front) {
+        imagetobedeleted.push(d.singlecar?.FrontImage)
       }
-      if(supportimages){
-        // delete all support pics on cloud
-      }
+        // try {
+        //      const result:Result|undefined =await deleteImage([id])
+        //   if (result?.success) {
 
+        //     return console.log("successfuly deleted");
+        //   } else {
+        //     return console.log("error on deleting");
+        //   }
+        // } catch (error) {
+        //   console.error('Error deleting image:', error);
+        //   return console.log("error while deleting", error);
+        // }
+      
 
       const byte = await FrontImagefile.arrayBuffer();
       const buffer = Buffer.from(byte);
@@ -150,7 +143,7 @@ export async function POST(request: Request) {
     // replace the slash in public_id with A so car-folder/ will be car-folderA
     const replaceSlash = (x: any) => {
       if (Array.isArray(x)) {
-        var replacedString_id:string[] = [];
+        var replacedString_id: string[] = [];
         x.forEach((el) => {
           replacedString_id.push(el.replace("car-folder/", "car-folderA"));
         })
@@ -166,34 +159,34 @@ export async function POST(request: Request) {
       connect();
       const product = new Car({
         CarBrand: brandname,
-        CarName:carname,
-        FrontImage:frontPic.toString(),
+        CarName: carname,
+        FrontImage: frontPic.toString(),
         // may be there is error on this i woll see later
         SupportImages: otherPic.toString(),
         Catagory: catagory,
-        SubCatagory:subcatagory,
-        WarrantyGiven:warranty,
-        Model:model,
-        MileGone:Number(milegone),
+        SubCatagory: subcatagory,
+        WarrantyGiven: warranty,
+        Model: model,
+        MileGone: Number(milegone),
         Description: description,
         Price: Number(price),
         Color: color,
-        Condition:condition,
-        Silinder:Number(silinder),
-        Year:year,
-        Transmission:transmission,
-        DiscountedAmount:Number(discountedamount),
-        FuelType:fueltype,
-        Size:size,
-        IsNew:stringToBoolean(isNew),
-        IsPopular:stringToBoolean(IsPopular),
+        Condition: condition,
+        Silinder: Number(silinder),
+        Year: year,
+        Transmission: transmission,
+        DiscountedAmount: Number(discountedamount),
+        FuelType: fueltype,
+        Size: size,
+        IsNew: stringToBoolean(isNew),
+        IsPopular: stringToBoolean(IsPopular),
         InStock: stringToBoolean(Instock),
       })
       await product.save();
       return NextResponse.json({ message: "Car is registered sucsessfuly" }, { status: 200 })
     } catch (error) {
-      console.log("errorrroror",error)
-      return NextResponse.json({error:"error ocured ooon uploading saving other images"},{status:500})
+      console.log("errorrroror", error)
+      return NextResponse.json({ error: "error ocured ooon uploading saving other images" }, { status: 500 })
     }
   } catch (error) {
     console.log("upload faild", error);

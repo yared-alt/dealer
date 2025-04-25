@@ -1,4 +1,4 @@
-import { GETSINGLECAR } from "@/app/api/edit/route";
+import { GETSINGLECAR } from "@/type/Car";
 import { connect } from "@/lib/config/dbconfig";
 import Car from "@/lib/model/carModel";
 

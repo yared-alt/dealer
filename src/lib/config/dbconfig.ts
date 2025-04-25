@@ -25,6 +25,7 @@ export async function connect(): Promise<ConnectionResult> {
     return { success: true };
 
   } catch (err) {
+    console.log(err)
     return { 
       success: false, 
       error: "Failed to connect to database" 

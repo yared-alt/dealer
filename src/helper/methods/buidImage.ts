@@ -1,4 +1,4 @@
-import { Car } from "@/app/dashboard/page";
+import { Car } from "@/type/Car";
 
 
 export default function buildImage(car:Car|Car[]) {

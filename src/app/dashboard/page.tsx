@@ -9,50 +9,16 @@ import {
   ChevronLeft,
   Plus,
   Trash2Icon,
+  Pencil,
 } from "lucide-react";
 import Link from "next/link";
+import { Car, Pagination } from "@/type/Car";
 
-interface Pagination {
-  page: number,
-  limit: number,
-  totalcount: number,
-  totalPages: number,
-  hasNext: boolean,
-  hasPrev: boolean,
-  nextPage: number | null,
-  prevPage: number | null,
-}
-export interface Car {
-  _id: string
-  id?: string
-  CarName: string
-  CarBrand: string
-  FrontImage: string
-  Model: string
-  MileGone: number
-  SupportImages: string[]
-  Category: string
-  SubCategory: string
-  DiscountedAmount: number
-  WarrantyGiven: string
-  Description: string
-  Price: number
-  FuelType: string
-  Color: string
-  Size: string
-  Condition: string
-  Transmission: string
-  Silinder: number
-  Year: number
-  IsNew: boolean
-  Review: number
-  IsPopular: boolean
-  InStock: boolean
-  Selected?: boolean
-}
 
 const Page = () => {
 
+  const [carList,setCarList]=useState("All Cars")
+  const [sortBy,setSortBy]=useState("Default")
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState<number>(1)
@@ -67,7 +33,7 @@ const Page = () => {
   const [selectedProducts, setSelectedProducts] = useState<string[]>(
     products?.filter(p => p.Selected).map(p => p._id) ?? []
   );
-  const [showDeletButton, setShowDeletButton] = useState<boolean>(false)
+  const [finalSelectedProducts,setFinalSelectedProducts]=useState<string[]>([]);
 
   const fetchProducts = async () => {
     try {
@@ -81,16 +47,14 @@ const Page = () => {
       });
       const url = `/api/Car/filtercar?${params.toString()}`;
       const res = await fetch(url);
-      console.log(res)
-      console.log("hiiii")
-      if (res.ok) {
-        const { data, pagination } = await res.json();
-        console.log("data", data)
-        console.log("paginetion", pagination)
-        setProducts(data);
-        setPaginetion(pagination)
-        setTotalPages(pagination.totalPages);
-      }
+      if (!res.ok) {
+        const {message}=await res.json()
+       alert(message)
+     }
+      const { data, pagination } = await res.json();
+      setProducts(data);
+      setPaginetion(pagination)
+      setTotalPages(pagination.totalPages);
     } catch (error) {
       console.log("error on fetching mybe network")
       return;
@@ -100,16 +64,29 @@ const Page = () => {
   };
   useEffect(() => { fetchProducts() }, [page]);
 
+  
+  useEffect(()=>{
+    setFinalSelectedProducts(selectedProducts)
+  },[selectedProducts])
+  
+  const updateTrashCan=():boolean=>{
+    if (finalSelectedProducts.length>0) {
+      return true;
+    }else{
+      return false
+    }
+  }
+  const isShow=updateTrashCan();
+
   const deleteProduct=async ()=>{
 
     try {
       setLoading(true)
-      const d=JSON.stringify(selectedProducts)
       const params = new URLSearchParams({
-        d
-      });
-      const url=`api/delete?id${params}`
-      const response=await fetch(url);
+        ids:finalSelectedProducts.join(",")
+      }).toString();
+      const url=`api/delete?${params}`
+      const response=await fetch(url,{method:"DELETE"});
       if (!response.ok) {
         alert("response is not ok")
       }
@@ -122,21 +99,24 @@ const Page = () => {
       setLoading(false)
     }
   }
-
-  const handleCheckboxChange = (productId: string) => {
-    console.log("hiiiiiiii")
+  
+  const handleCheckboxChange = ({event,productId}: {event:React.ChangeEvent<HTMLInputElement>,productId:string}) => {
+    console.log("finalselectedproduct",finalSelectedProducts)
     console.log(productId)
-    setSelectedProducts(prev =>
-      prev.includes(productId)
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    );
-    console.log(selectedProducts)
+     setSelectedProducts(prev=>
+      prev.includes(productId) ? prev.filter(id=> id !== productId ) : [...prev,productId])
   };
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target;
-    setSelectedProducts(checked ? products?.map(product => product.id) ?? [] : []);
-    setShowDeletButton(checked);
+    if(checked){
+      const allpro:string[]=[];
+      products?.forEach(p=>{
+        allpro.push(p._id)
+      })
+      setSelectedProducts(allpro)
+    }else{
+      setSelectedProducts([])
+    }
   };
 
   const handleSearch = (query: string) => {
@@ -174,18 +154,33 @@ const Page = () => {
                       onClick={() => setShowFilter(!showFilter)}
                       className="flex items-center gap-1 text-sm text-gray-600 border px-3 py-1.5 rounded"
                     >
-                      Show: All Cars <ChevronDown className="h-4 w-4" />
+                      Show: {carList} <ChevronDown className="h-4 w-4" />
                     </button>
                     {showFilter && (
                       <div className="absolute z-10 mt-1 bg-white border rounded-md shadow-lg w-48">
                         <div className="py-1">
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          <button
+                          onClick={()=>{
+                            setCarList("All Cars")
+                            setShowFilter(false)
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             All Cars
                           </button>
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          <button
+                          onClick={()=>{
+                            setCarList("Active Cars")
+                            setShowFilter(false)
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Active Cars
                           </button>
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          <button
+                          onClick={()=>{
+                            setCarList("Out of Stock")
+                            setShowFilter(false)
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Out of Stock
                           </button>
                         </div>
@@ -203,21 +198,41 @@ const Page = () => {
                       onClick={() => setShowSort(!showSort)}
                       className="flex items-center gap-1 text-sm text-gray-600 cursor-pointer border px-3 py-1.5 rounded"
                     >
-                      Sort by: Default <ChevronDown className="h-4 w-4" />
+                      Sort by: {sortBy} <ChevronDown className="h-4 w-4" />
                     </button>
                     {showSort && (
                       <div className="absolute z-10 mt-1 bg-white border rounded-md shadow-lg w-48">
                         <div className="py-1">
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          <button
+                          onClick={()=>{
+                            setSortBy("Default")
+                            setShowSort(false)
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Default
                           </button>
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          <button
+                          onClick={()=>{
+                            setSortBy("Name (A-Z)")
+                            setShowSort(false)
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Name (A-Z)
                           </button>
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          <button
+                          onClick={()=>{
+                            setSortBy("Price (Low to High)")
+                            setShowSort(false)
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Price (Low to High)
                           </button>
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          <button
+                          onClick={()=>{
+                            setSortBy("Stock (Low to High)")
+                            setShowSort(false)
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Stock (Low to High)
                           </button>
                         </div>
@@ -251,11 +266,7 @@ const Page = () => {
                         <input
                           type="checkbox"
                           className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          onChange={handleSelectAll}
-                        // checked={
-                        //   displayedProducts.length > 0 &&
-                        //   displayedProducts.every(product => selectedProducts.includes(product.id))
-                        // }
+                          onChange={(e)=>handleSelectAll(e)}
                         />
                       </th>
                       <th className="uppercase px-4 py-3 text-left  flex gap-2 align-middletext-xs font-medium text-gray-500 tracking-wider">
@@ -263,8 +274,10 @@ const Page = () => {
                           CAR NAME
                         </p>
                         {
-                          showDeletButton ?
-                            <Trash2Icon className=" pt-1 cursor-pointer" /> : ""
+                          isShow ?
+                            <Trash2Icon
+                            onClick={deleteProduct}
+                            className=" pt-1 cursor-pointer" /> : ""
                         }
                       </th>
                       <th className="uppercase px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
@@ -299,8 +312,11 @@ const Page = () => {
                             type="checkbox"
                             className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             checked={selectedProducts.includes(product._id)}
-                            onChange={() => handleCheckboxChange(product._id)}
+                            onChange={(e) => handleCheckboxChange({event:e,productId:product._id})}
                           />
+                          <Link href={`dashboard/edit/${product._id}`}>
+                              <Pencil className="mx-4"/>
+                          </Link>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center">

@@ -1,30 +1,16 @@
 import Car from "@/lib/model/carModel";
 import { NextResponse } from "next/server";
 import { connect } from "@/lib/config/dbconfig";
-import type { Car as DashboardCar } from "@/app/dashboard/page";
+import type { Car as car, Filter } from "@/type/Car";
 import buildImage from "@/helper/methods/buidImage";
 
-
-
-interface Filter{
-  Color?:string, 
-  Catagory?:string, 
-  Model?:number, 
-  MinMileage?:number, 
-  MaxMileage?:number,
-  Condition?:string,
-  Year?:number,
-  Price?:number,
-  MinPrice?:number,
-  MaxPrice?:number,
-  Page?:number
-}
 
 export async function GET(req:Request) {
   try {
       const response=await connect()
       if (!response.success) {
-        console.log("response error object",response.error)
+        console.log("response connection error object",response.error)
+        return NextResponse.json({success:false,message:"connection faild on mongo"},{status:500})
       }
       
       console.log("iiii")
@@ -41,10 +27,10 @@ export async function GET(req:Request) {
 
       const filter :Filter={}
 
-      color ? console.log("color",true):console.log("color",false)
-      category ? console.log("category",true):console.log("category",false)
-      condition ? console.log("condition",true):console.log("condition",false)
-      year ? console.log("year",true):console.log("year",false)
+      // color ? console.log("color",true):console.log("color",false)
+      // category ? console.log("category",true):console.log("category",false)
+      // condition ? console.log("condition",true):console.log("condition",false)
+      // year ? console.log("year",true):console.log("year",false)
 
       
       if (color) filter.Color = color.toString().toLowerCase();
@@ -53,8 +39,8 @@ export async function GET(req:Request) {
       if (condition) filter.Condition = condition.toString();
       if (year) filter.Year = Number(year);
 
-      console.log("filter",filter)
-    const [cars, totalcount] :[cars:DashboardCar[],totalcount:number]= await Promise.all([
+      // console.log("filter",filter)
+    const [cars, totalcount] :[cars:car[],totalcount:number]= await Promise.all([
         Car.find(filter).skip(skip).limit(limit),
         Car.countDocuments(filter)
       ]);
@@ -69,7 +55,7 @@ export async function GET(req:Request) {
       
       const totalPages = Math.ceil(totalcount / limit);
 
-      console.log("cars",cars)
+      // console.log("cars",cars)
       console.log("totalcount",totalcount)
       const generatePageUrl = (newPage: number) => {
         const params = new URLSearchParams(searchParams);

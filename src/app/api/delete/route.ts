@@ -1,22 +1,28 @@
 import { NextResponse } from "next/server";
+import { Result } from "@/type/Car";
+import { deleteImage } from "./deleteImage";
+import { deleteProduct } from "./deleteProduct";
 
-
-
-export default async function DELETE(req:Request) {
+export async function DELETE(req:Request) {
     try {
-        
         const {searchParams}=new URL(req.url)
-        const id=searchParams.get("id");
-        if (!id) {
+        const ids=searchParams.get("ids")?.split(",")||[];
+        if (!ids) {
             return NextResponse.json({success:false,message:"product not found"},{status:404});
         }
- 
+        console.log("iss",ids)
+        const result:Result|undefined=await deleteImage(ids);
 
-        // delete logic here
-
-        return NextResponse.json({success:true,message:"product deleted succesfully"},{status:200});
+        if (result) {
+          const d= deleteProduct({ids,result})
+          if((await d).success){
+            return NextResponse.json({success:true,message:"product deleted succesfully"},{status:200});
+          }
+          return NextResponse.json({success:false,message:"error occured while deleting from mongo"},{status:500});
+        }
 
     } catch (error) {
         return NextResponse.json({success:false,message:"server error"},{status:500});
     }
+
 }

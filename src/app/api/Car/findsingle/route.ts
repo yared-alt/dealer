@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import getsingelCar from "@/lib/utils/shared-api/getsingleCar";
-import { GETSINGLECAR } from "../../edit/route";
 
 export default async function GET(req:Request) {
 
