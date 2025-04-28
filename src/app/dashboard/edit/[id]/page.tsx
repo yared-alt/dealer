@@ -1,29 +1,25 @@
 import React from 'react';
 import Form from "@/components/Form";
-import { Car } from '../../page';
+import { Car } from '@/type/Car';
+import getsingelCar from '@/lib/utils/shared-api/getsingleCar';
+import { serializeCar } from '@/helper/serializeData';
 
 async function Page({ params }: {
-  params: { id: string }}) {
-  const id  = params.id;
+  params: { id: string }
+}) {
+  const id = params.id;
 
-  try {
-    const res = await fetch(`/api/car/edit?id=${id}`);
-    
-    if (!res.ok) {
-      throw new Error('Failed to fetch data');
-    }
-    const { data } = await res.json();
-
-    const singelcar:Car=data.singlecar
-    const relatedcars=data.relatedcars
-
+  const { singlecar } = await getsingelCar(id)
+  const serializedData=serializeCar(singlecar);
+  // console.log("dddddddddddd",serializedData)
+  if (singlecar) {
     return (
       <div>
-        <Form data={singelcar} />
+        <Form data={serializedData} />
       </div>
     );
-  } catch (error) {
-    console.error('Error fetching data:', error);
+
+  } else {
     return (
       <div>
         <p>Error loading data. Please try again later.</p>
@@ -31,10 +27,6 @@ async function Page({ params }: {
       </div>
     );
   }
-
-
-
-  
 }
 
 export default Page;

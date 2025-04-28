@@ -1,4 +1,4 @@
-import { SerializedProduct, MongoProduct } from "@/type/Car.d.ts"
+import type { SerializedProduct, MongoProduct } from "@/type/Car.d.ts"
 
 export function serializeCar(cars: MongoProduct | any): SerializedProduct {
   const rawProduct = cars.toObject ? cars.toObject() : cars
@@ -14,13 +14,14 @@ export function serializeCar(cars: MongoProduct | any): SerializedProduct {
             Model: rawProduct.Model,
             WarrantyGiven: rawProduct.WarrantyGiven,
             Catagory: rawProduct.Catagory,
-            SubCatagory: rawProduct.SubCatagory,
+            SubCategory: rawProduct.SubCatagory,
             DiscountedAmount: rawProduct.DiscountedAmount || 0,
             Condition: rawProduct.Condition,
             Transmission: rawProduct.Transmission,
             Silinder: rawProduct.Silinder,
             Year: rawProduct.Year,
             Description: rawProduct.Description,
+            FuelType:rawProduct.FuelType,
             Price: rawProduct.Price,
             Color: rawProduct.Color,
             Size: rawProduct.Size,

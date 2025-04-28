@@ -8,6 +8,7 @@ import {
   Save,
   Star,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const DEFAULT_IMG = "/bff0fbea-2ff6-492f-94a5-7074eaa101b7.png";
 const CAR_CATEGORIES = ["SUV", "Sedan", "Hatchback", "Truck", "Convertible"];
@@ -142,10 +143,20 @@ const page = () => {
       setLoading(true)
       const response = await fetch("/api/upload", { method: "POST", body: finalFormData })
       console.log(response)
-      window.alert("Product uploaded (demo only)");
+      if(!response.ok){
+        toast.error("Enquiry sent", {
+          description: "Failed to get product. please try again!",
+        });
+        return;
+      }
+      toast.success("Enquiry sent", {
+        description: "Product uploaded!",
+      });
     } catch (error) {
+      toast.error("Enquiry sent", {
+        description: "Server is not responding. please try again!",
+      });
       console.error(error);
-      window.alert("Network error");
       // the connection feliour on mongo is not handled remember
     } finally {
       setLoading(false)

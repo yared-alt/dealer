@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 interface ConnectionResult {
   success: boolean;
-  error?: string;
+  message: string;
 }
 
 export async function connect(): Promise<ConnectionResult> {
@@ -18,17 +18,17 @@ export async function connect(): Promise<ConnectionResult> {
     connection.on("error", (err) => {
       return { 
         success: false, 
-        error: "MongoDB connection error" 
+        message: "MongoDB connection error" 
       };
     });
     await connectionPromise;
-    return { success: true };
+    return { success: true ,message:'conected seccessfuly'};
 
   } catch (err) {
     console.log(err)
     return { 
       success: false, 
-      error: "Failed to connect to database" 
+      message: "Failed to connect to database" 
     };
   }
 }

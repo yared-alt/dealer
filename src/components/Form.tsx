@@ -1,14 +1,13 @@
 "use client"
 import React, { useState } from "react";
 import {
-  Check,
-  Plus,
-  Image as ImageIcon,
-  FileImage,
-  Save,
-  Star,
+  Check,Plus,Image as ImageIcon,
+  FileImage,Save,Star,
+  CloudHail,
 } from "lucide-react";
-import { Car } from "@/app/dashboard/page";
+import { Car } from "@/type/Car";
+import getsingelCar from "@/lib/utils/shared-api/getsingleCar";
+import { serializeCar } from "@/helper/serializeData";
 
 const DEFAULT_IMG = "/bff0fbea-2ff6-492f-94a5-7074eaa101b7.png";
 const CAR_CATEGORIES = ["SUV", "Sedan", "Hatchback", "Truck", "Convertible"];
@@ -23,33 +22,51 @@ const TRANSMISSIONS = ["Manual", "Automatic", "Semi-automatic"];
 const YEARS = Array.from({ length: 35 }, (_, i) => `${1990 + i}`);
 const SUBCATEGORIES = ["Premium", "Standard", "Budget", "Family", "Sport"];
 
-const page = (data:Car) => {
-  const [carName, setCarName] = useState(data.CarName);
-  const [carBrand, setCarBrand] = useState(data.CarBrand);
-  const [model, setModel] = useState(data.Model);
-  const [mileGone, setMileGone] = useState(data.MileGone);
-  const [category, setCategory] = useState(data.Catagory);
-  const [subCategory, setSubCategory] = useState(data.SubCategory);
-  const [discountedAmount, setDiscountedAmount] = useState(data.DiscountedAmount);
-  const [warrantyGiven, setWarrantyGiven] = useState(data.WarrantyGiven);
-  const [description, setDescription] = useState(data.Description);
-  const [price, setPrice] = useState(data.Price);
-  const [fuelType, setFuelType] = useState(data.FuelType);
-  const [color, setColor] = useState(data.Color);
-  const [size, setSize] = useState(data.Size);
-  const [condition, setCondition] = useState(data.Condition);
-  const [transmission, setTransmission] = useState(data.Transmission);
-  const [silinder, setSilinder] = useState(data.Silinder);
-  const [year, setYear] = useState(data.Year);
-  const [isNew, setIsNew] = useState(data.IsNew);
-  const [review, setReview] = useState(data.Review);
-  const [isPopular, setIsPopular] = useState(data.IsPopular);
-  const [inStock, setInStock] = useState(data.InStock);
 
-  const [frontImagee, setFrontImage] = useState(data.FrontImage);
+async function fetche(id:string) {
+  const { singlecar } = await getsingelCar(id)
+  if (singlecar) {
+    return singlecar;
+  }
+  return false;
+}
+
+const page =async (id: string) => {
+  const data: Car | boolean =await fetche(id)
+  if (!data) {
+    alert("car is not found")
+    return;
+  }
+  const serializedData=serializeCar(data);
+  // console.log("dddddddddddd",serializedData)
+
+  console.log(serializedData.SupportImages)
+  const [carName, setCarName] = useState(serializedData.CarName);
+  const [carBrand, setCarBrand] = useState(serializedData.CarBrand);
+  const [model, setModel] = useState(serializedData.Model);
+  const [mileGone, setMileGone] = useState(serializedData.MileGone);
+  const [category, setCategory] = useState(serializedData.Catagory);
+  const [subCategory, setSubCategory] = useState(serializedData.SubCategory);
+  const [discountedAmount, setDiscountedAmount] = useState(serializedData.DiscountedAmount);
+  const [warrantyGiven, setWarrantyGiven] = useState(serializedData.WarrantyGiven);
+  const [description, setDescription] = useState(serializedData.Description);
+  const [price, setPrice] = useState(serializedData.Price);
+  const [fuelType, setFuelType] = useState(serializedData.FuelType);
+  const [color, setColor] = useState(serializedData.Color);
+  const [size, setSize] = useState(serializedData.Size);
+  const [condition, setCondition] = useState(serializedData.Condition);
+  const [transmission, setTransmission] = useState(serializedData.Transmission);
+  const [silinder, setSilinder] = useState(serializedData.Silinder);
+  const [year, setYear] = useState(serializedData.Year);
+  const [isNew, setIsNew] = useState(serializedData.IsNew);
+  const [review, setReview] = useState(serializedData.Review);
+  const [isPopular, setIsPopular] = useState(serializedData.IsPopular);
+  const [inStock, setInStock] = useState(serializedData.InStock);
+
+  const [frontImagee, setFrontImage] = useState(serializedData.FrontImage);
   const [frontImageFile, setFrontImageFile] = useState<File | null>(null);
-  const [supportImages, setSupportImages] = useState<string[]>([
-    data.SupportImages.join(",")
+  const [supportImages, setSupportImages] = useState([
+    serializedData.SupportImages
   ]);
   const [supportImageFiles, setSupportImageFiles] = useState<(File | null)[]>([
     null,
@@ -57,11 +74,41 @@ const page = (data:Car) => {
     null,
   ]);
 
+supportImages.forEach(item=>{
+  if (typeof item === 'string') {
+    return item.replace("car-folderA", 'car-folder/');
+  }
+})
+
+  const editpro = async () => {
+    try {
+      const searchparams = new URLSearchParams(window.location.search)
+      const id = searchparams.get("id") || ""
+      const params = new URLSearchParams({ id });
+
+      const url = `/api/Car/edit?${params}`
+      const res = await fetch(url, { method: "POST" });
+
+      console.log(res)
+      if (!res.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const { data } = await res.json();
+
+    } catch (err) {
+      console.log(err)
+    }
+
+  }
+
+
   const handleFrontImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setFrontImage(URL.createObjectURL(file));
     setFrontImageFile(file);
+    console.log("frontImagee",frontImagee)
+    console.log("frontImageeFile",frontImageFile)
   };
 
   const handleSupportImageChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,74 +121,74 @@ const page = (data:Car) => {
     const newFiles = [...supportImageFiles];
     newFiles[idx] = file;
     setSupportImageFiles(newFiles);
+    console.log("support",supportImages)
+    console.log("supportFile",supportImageFiles)
   };
 
-  const handleFormSubmit = async(e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   
+
     const formdata = new FormData(e.currentTarget as HTMLFormElement);
-    console.log(Object.fromEntries(formdata.entries()));
-    console.log(formdata.get("price"))
 
-console.log("fileq1,",frontImageFile)
-console.log("no",supportImageFiles)
+    // console.log("fileq1,", frontImageFile)
+    // console.log("no", supportImageFiles)
 
-const finalFormData=new FormData()
+    const finalFormData = new FormData()
 
 
-const brandname= formdata.get("carBrand")
-const carname= formdata.get("carName")
-const catagory= formdata.get("catagory")
-const price= formdata.get("price")
-const description= formdata.get("")
-const color= formdata.get("color")
-const size= formdata.get("size")
-const model= formdata.get("model")
-const discount= formdata.get("discountedAmount")
-const subcatagory= formdata.get("subCategory")
-const warranty= formdata.get("warrantyGiven")
-const fuel= formdata.get("fuelType")
-const milegone= formdata.get("mileGone")
-const condition= formdata.get("condition")
-const transmission= formdata.get("transmission")
-const silinder= formdata.get("silinder")
-const year= formdata.get("year")
-const isnew= formdata.get("isNew")
-const isPopular= formdata.get("isPopular")
-const Instock= formdata.get("inStock")
+    const brandname = formdata.get("carBrand")
+    const carname = formdata.get("carName")
+    const catagory = formdata.get("catagory")
+    const price = formdata.get("price")
+    const description = formdata.get("")
+    const color = formdata.get("color")
+    const size = formdata.get("size")
+    const model = formdata.get("model")
+    const discount = formdata.get("discountedAmount")
+    const subcatagory = formdata.get("subCategory")
+    const warranty = formdata.get("warrantyGiven")
+    const fuel = formdata.get("fuelType")
+    const milegone = formdata.get("mileGone")
+    const condition = formdata.get("condition")
+    const transmission = formdata.get("transmission")
+    const silinder = formdata.get("silinder")
+    const year = formdata.get("year")
+    const isnew = formdata.get("isNew")
+    const isPopular = formdata.get("isPopular")
+    const Instock = formdata.get("inStock")
 
- finalFormData.append("frontImage",frontImageFile as File)
- supportImageFiles.forEach((file,i)=>{if (file) {
-     finalFormData.append("otherImages",file)
- }})
- finalFormData.append("brandname",brandname as string)
- finalFormData.append("carname",carname as string)
- finalFormData.append("catagory",catagory as string)
- finalFormData.append("price",price as string)
- finalFormData.append("description",description as string)
- finalFormData.append("color",color as string)
- finalFormData.append("size",size as string)
- finalFormData.append("model",model as string)
- finalFormData.append("discount",discount as string)
- finalFormData.append("subcatagory",subcatagory as string)
- finalFormData.append("warranty",warranty as string)
- finalFormData.append("fuel",fuel as string)
- finalFormData.append("milegone",milegone as string)
- finalFormData.append("condition",condition as string)
- finalFormData.append("transmission",transmission as string)
- finalFormData.append("silinder",silinder as string)
- finalFormData.append("year",year as string)
- finalFormData.append("isnew",isnew as string)
- finalFormData.append("isPopular",isPopular as string)
- finalFormData.append("Instock",Instock as string)
-
-console.log(supportImages)
+    finalFormData.append("frontImage", frontImageFile as File)
+    supportImageFiles.forEach((file, i) => {
+      if (file) {
+        finalFormData.append("otherImages", file)
+      }
+    })
+    finalFormData.append("brandname", brandname as string)
+    finalFormData.append("carname", carname as string)
+    finalFormData.append("catagory", catagory as string)
+    finalFormData.append("price", price as string)
+    finalFormData.append("description", description as string)
+    finalFormData.append("color", color as string)
+    finalFormData.append("size", size as string)
+    finalFormData.append("model", model as string)
+    finalFormData.append("discount", discount as string)
+    finalFormData.append("subcatagory", subcatagory as string)
+    finalFormData.append("warranty", warranty as string)
+    finalFormData.append("fuel", fuel as string)
+    finalFormData.append("milegone", milegone as string)
+    finalFormData.append("condition", condition as string)
+    finalFormData.append("transmission", transmission as string)
+    finalFormData.append("silinder", silinder as string)
+    finalFormData.append("year", year as string)
+    finalFormData.append("isnew", isnew as string)
+    finalFormData.append("isPopular", isPopular as string)
+    finalFormData.append("Instock", Instock as string)
 
     try {
-        const response=await fetch("/api/edit",{method:"POST",body: finalFormData})
-        console.log(response)
+      const response = await fetch("/api/edit", { method: "POST", body: finalFormData })
+      console.log(response)
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
     window.alert("Product uploaded (demo only).");
   };
@@ -162,6 +209,7 @@ console.log(supportImages)
           <div className="flex gap-3 mt-3 md:mt-0">
             <button
               type="submit"
+              onClick={editpro}
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition"
             >
               <Check className="h-4 w-4" />
@@ -194,7 +242,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="carbrand"
-                    name="carBrand" 
+                    name="carBrand"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={carBrand}
                     onChange={e => setCarBrand(e.target.value)}
@@ -208,7 +256,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="model"
-                    name="model" 
+                    name="model"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={model}
                     onChange={e => setModel(e.target.value)}
@@ -222,7 +270,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="year"
-                    name="year" 
+                    name="year"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={year}
                     required
@@ -239,7 +287,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="category"
-                    name="category" 
+                    name="category"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={category}
                     onChange={e => setCategory(e.target.value)}
@@ -255,7 +303,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="subcategory"
-                    name="subCategory" 
+                    name="subCategory"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={subCategory}
                     onChange={e => setSubCategory(e.target.value)}
@@ -277,7 +325,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="fuel"
-                    name="fuelType" 
+                    name="fuelType"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={fuelType}
                     onChange={e => setFuelType(e.target.value)}
@@ -294,7 +342,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="color"
-                    name="color" 
+                    name="color"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={color}
                     required
@@ -311,7 +359,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="size"
-                    name="size" 
+                    name="size"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={size}
                     required
@@ -328,7 +376,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="transmission"
-                    name="transmission" 
+                    name="transmission"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={transmission}
                     required
@@ -345,7 +393,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="silinder"
-                    name="silinder" 
+                    name="silinder"
                     required
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={silinder}
@@ -359,7 +407,7 @@ console.log(supportImages)
                   </label>
                   <select
                     id="condition"
-                    name="condition" 
+                    name="condition"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={condition}
                     required
@@ -376,7 +424,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="milegone"
-                    name="mileGone" 
+                    name="mileGone"
                     required
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     type="number"
@@ -391,7 +439,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="warranty"
-                    name="warrantyGiven" 
+                    name="warrantyGiven"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={warrantyGiven}
                     required
@@ -405,7 +453,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="discountedamt"
-                    name="discountedAmount" 
+                    name="discountedAmount"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     type="number"
                     value={discountedAmount}
@@ -425,7 +473,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="price"
-                    name="price" 
+                    name="price"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     type="number"
                     value={price}
@@ -441,7 +489,7 @@ console.log(supportImages)
                   </label>
                   <input
                     id="review"
-                    name="review" 
+                    name="review"
                     className="w-full rounded-md border border-gray-200 px-3 py-2 bg-gray-100 text-gray-800"
                     value={review}
                     onChange={e => setReview(Number(e.target.value))}
@@ -452,7 +500,7 @@ console.log(supportImages)
                   <label className="inline-flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      name="isNew" 
+                      name="isNew"
                       checked={isNew}
                       onChange={e => setIsNew(e.target.checked)}
                       className="accent-green-600 h-4 w-4"
@@ -462,7 +510,7 @@ console.log(supportImages)
                   <label className="inline-flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      name="isPopular" 
+                      name="isPopular"
                       checked={isPopular}
                       onChange={e => setIsPopular(e.target.checked)}
                       className="accent-blue-600 h-4 w-4"
@@ -472,7 +520,7 @@ console.log(supportImages)
                   <label className="inline-flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      name="inStock" 
+                      name="inStock"
                       checked={inStock}
                       onChange={e => setInStock(e.target.checked)}
                       className="accent-teal-600 h-4 w-4"
@@ -496,7 +544,7 @@ console.log(supportImages)
                   Upload
                   <input
                     id="front-image-upload"
-                    name="frontImage" 
+                    name="frontImage"
                     type="file"
                     className="hidden"
                     accept="image/png,image/jpeg"
@@ -506,11 +554,25 @@ console.log(supportImages)
                 </label>
               </div>
               <div className="rounded-lg bg-gray-100 overflow-hidden w-44 h-44 flex items-center justify-center border border-gray-200">
-                <img
-                  src={frontImagee}
-                  className="object-contain w-full h-full"
-                  alt="Front"
-                />
+                {
+                  typeof frontImagee == "string" ? (
+                    <>
+                      <img
+                        src={`https://res.cloudinary.com/dr1ejpdn8/image/upload/${frontImagee.replace("car-folderA", "car-folder/")}`}
+                        className="object-contain w-full h-full"
+                        alt="Front"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <img
+                        src={frontImagee}
+                        className="object-contain w-full h-full"
+                        alt="Front"
+                      />
+                    </>
+                  )
+                }
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4">
@@ -518,18 +580,27 @@ console.log(supportImages)
               <div className="grid grid-cols-3 gap-3">
                 {supportImages.map((img, idx) => (
                   <div key={idx} className="flex flex-col items-center">
+                    
                     <label
                       htmlFor={`support-image-upload-${idx}`}
                       className="cursor-pointer w-20 h-20 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center overflow-hidden hover:bg-gray-200"
                     >
-                      <img
-                        src={img}
-                        alt={`Support ${idx + 1}`}
-                        className="object-contain w-full h-full"
-                      />
+                      {typeof img === "string" ? (
+                        <img
+                          src={`https://res.cloudinary.com/dr1ejpdn8/image/upload/${img.replace("car-folderA", "car-folder/")}`}
+                          alt={`Support ${idx + 1}`}
+                          className="object-contain w-full h-full"
+                        />
+                      ) : (
+                        <img
+                          src={img}
+                          alt={`Support ${idx + 1}`}
+                          className="object-contain w-full h-full"
+                        />
+                      )}
                       <input
                         id={`support-image-upload-${idx}`}
-                        name={`supportImage${idx}`} 
+                        name={`supportImage${idx}`}
                         type="file"
                         className="hidden"
                         accept="image/png,image/jpeg"
@@ -550,7 +621,7 @@ console.log(supportImages)
             </label>
             <textarea
               id="description"
-              name="description" 
+              name="description"
               className="w-full rounded-md border border-gray-200 px-3 py-2 min-h-[100px] bg-gray-100 text-gray-800"
               value={description}
               onChange={e => setDescription(e.target.value)}
@@ -560,7 +631,7 @@ console.log(supportImages)
           </div>
         </div>
       </div>
-    </form>
+    </form >
   );
 };
 

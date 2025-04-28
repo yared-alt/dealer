@@ -4,7 +4,7 @@ import Car from "@/lib/model/carModel";
 import { connect } from "@/lib/config/dbconfig";
 import getsingelCar from "@/lib/utils/shared-api/getsingleCar";
 import { CloudinaryResult, Result } from "@/type/Car";
-import { deleteImage } from "../delete/deleteImage";
+import { deletImage } from "./deletImage";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -20,17 +20,18 @@ function stringToBoolean(str): boolean {
 }
 
 export async function POST(request: Request) {
-
+  const { success, message } = await connect();
+  if (!success) {
+    return NextResponse.json({ error: message }, { status: 400 })
+  }
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get("id") as string
-
     const { success, message, singlecar } = await getsingelCar(id)
 
     if (!success) {
       return NextResponse.json({ success: false, message: message }, { status: 404 });
     }
-
     const formdata = await request.formData();
 
     const FrontImagefile = formdata.get("frontImage") as File | string;
@@ -60,85 +61,82 @@ export async function POST(request: Request) {
 
     // console.log(brandname,price,description,isNew,IsPopular,color,size,FrontImagefile,supportImages,catagory,Instock)
 
-    if (!FrontImagefile || !brandname || !catagory || !price || !description || color || !size) {
+    if (!FrontImagefile || !brandname || !catagory || !price || !description || !color || !size) {
       console.log("Incommplete data")
       // return NextResponse.json({ error: "incomplete data" }, { status: 400 })
     }
-    try {
 
-      const front = (typeof FrontImagefile === "string")
-      const changedSupportImages = supportImages.filter((each,i) => typeof each === "string")
-
-      const d=await getsingelCar(id);
-      const imagetobedeleted=[]
-      if (!front) {
-        imagetobedeleted.push(d.singlecar?.FrontImage)
+    const front = (typeof FrontImagefile !== "string")
+    const indexs = []
+    for (var i = 0; i <= supportImages.length; i++) {
+      if (typeof supportImages[i] !== "string") {
+        indexs.push(i)
       }
-        // try {
-        //      const result:Result|undefined =await deleteImage([id])
-        //   if (result?.success) {
-
-        //     return console.log("successfuly deleted");
-        //   } else {
-        //     return console.log("error on deleting");
-        //   }
-        // } catch (error) {
-        //   console.error('Error deleting image:', error);
-        //   return console.log("error while deleting", error);
-        // }
-      
-
-      const byte = await FrontImagefile.arrayBuffer();
-      const buffer = Buffer.from(byte);
-
-      const frontresult = await new Promise<CloudinaryResult>(
-        (resolve, rejects) => {
-          const uploadStream = cloudinary.uploader.upload_stream(
-            {
-              folder: "car-folder",
-              transformation: [
-                { width: 800, height: 600, crop: "limit" },
-                { quality: "auto" }
-              ]
-            },
-            (error, result) => {
-              if (error) rejects(error);
-              else resolve(result as CloudinaryResult);
-            }
-          );
-          uploadStream.end(buffer)
-        }
-      )
-      // console.log(frontresult)
-      FrontimagePublic_id = frontresult.public_id;
-    } catch (error) {
-      console.error("Error reading file:", error);
-      return NextResponse.json({ error: "error ocured on uploding image" }, { status: 500 });
     }
-    // additinal image s upload
-    // return;
-    try {
 
-      const supportImagesResults = await Promise.all(
-        supportImages.map(async (file) => {
-          const buffer = Buffer.from(await file.arrayBuffer());
-          return new Promise<CloudinaryResult>((resolve, reject) => {
+    if (!front && indexs.length === 0) {
+      return;
+    } else {
+      const data = await deletImage({ id, front, indexs })
+      if (data.seccess == false) {
+        return NextResponse.json({ message: data.message }, { status: 500 });
+      }
+      // for front image upload
+      if (front) {
+        const byte = await FrontImagefile.arrayBuffer();
+        const buffer = Buffer.from(byte);
+  
+        const uploadresult = await new Promise<CloudinaryResult>(
+          (resolve, rejects) => {
             const uploadStream = cloudinary.uploader.upload_stream(
-              { folder: "car-folder" },
+              {
+                folder: "car-folder",
+                transformation: [
+                  { width: 800, height: 600, crop: "limit" },
+                  { quality: "auto" }
+                ]
+              },
               (error, result) => {
-                if (error) reject(error);
+                if (error) rejects(error);
                 else resolve(result as CloudinaryResult);
               }
             );
-            uploadStream.end(buffer);
-          });
-        })
-      );
-      supportImagesResults.map((each) => {
-        OtherimagesPublic_id.push(each.public_id)
-      })
-    } catch (error) {
-      return NextResponse.json({ error: "error ocured on uploading support images" }, { status: 500 })
+            uploadStream.end(buffer)
+          }
+        )
+        // console.log(uploadresult)
+        FrontimagePublic_id = uploadresult.public_id;
+      }
+
+    }
+
+    for (const e of supportImages) {
+      if (typeof e !== "string") {
+        const byte = await e.arrayBuffer();
+        const buffer = Buffer.from(byte);
+
+        const uploadresult = await new Promise<CloudinaryResult>(
+          (resolve, rejects) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              {
+                folder: "car-folder",
+                transformation: [
+                  { width: 800, height: 600, crop: "limit" },
+                  { quality: "auto" }
+                ]
+              },
+              (error, result) => {
+                if (error) rejects(error);
+                else resolve(result as CloudinaryResult);
+              }
+            );
+            uploadStream.end(buffer)
+          }
+        )
+        // console.log(uploadresult)
+        FrontimagePublic_id = uploadresult.public_id;
+
+      }
     }
     // replace the slash in public_id with A so car-folder/ will be car-folderA
     const replaceSlash = (x: any) => {
@@ -155,42 +153,38 @@ export async function POST(request: Request) {
     const frontPic = replaceSlash(FrontimagePublic_id);
     const otherPic = replaceSlash(OtherimagesPublic_id);
     // return;
-    try {
-      connect();
-      const product = new Car({
-        CarBrand: brandname,
-        CarName: carname,
-        FrontImage: frontPic.toString(),
-        // may be there is error on this i woll see later
-        SupportImages: otherPic.toString(),
-        Catagory: catagory,
-        SubCatagory: subcatagory,
-        WarrantyGiven: warranty,
-        Model: model,
-        MileGone: Number(milegone),
-        Description: description,
-        Price: Number(price),
-        Color: color,
-        Condition: condition,
-        Silinder: Number(silinder),
-        Year: year,
-        Transmission: transmission,
-        DiscountedAmount: Number(discountedamount),
-        FuelType: fueltype,
-        Size: size,
-        IsNew: stringToBoolean(isNew),
-        IsPopular: stringToBoolean(IsPopular),
-        InStock: stringToBoolean(Instock),
-      })
-      await product.save();
-      return NextResponse.json({ message: "Car is registered sucsessfuly" }, { status: 200 })
-    } catch (error) {
-      console.log("errorrroror", error)
-      return NextResponse.json({ error: "error ocured ooon uploading saving other images" }, { status: 500 })
+    const product = {
+      CarBrand: brandname,
+      CarName: carname,
+      FrontImage: frontPic.toString(),
+      SupportImages: otherPic.toString(),
+      Catagory: catagory,
+      SubCatagory: subcatagory,
+      WarrantyGiven: warranty,
+      Model: model,
+      MileGone: Number(milegone),
+      Description: description,
+      Price: Number(price),
+      Color: color,
+      Condition: condition,
+      Silinder: Number(silinder),
+      Year: year,
+      Transmission: transmission,
+      DiscountedAmount: Number(discountedamount),
+      FuelType: fueltype,
+      Size: size,
+      IsNew: stringToBoolean(isNew),
+      IsPopular: stringToBoolean(IsPopular),
+      InStock: stringToBoolean(Instock),
     }
-  } catch (error) {
-    console.log("upload faild", error);
-    return NextResponse.json({ error: "faild on server" }, { status: 500 })
+    const update=await Car.findByIdAndUpdate(id,{product})
+    // ypu will yous findAndUpdate
+    // await product.save();
+    console.log(update)
+    // return NextResponse.json({success:true, message: "" }, { status: 500 });
+  }catch(err){
+    console.log(err)
+    return NextResponse.json({success:false, message: "server error occured" }, { status: 500 });
   }
 }
 

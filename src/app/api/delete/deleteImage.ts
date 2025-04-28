@@ -8,10 +8,9 @@ cloudinary.config({
     api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
   })
-export const deleteImage = async(ids:string[]):Promise<Result|undefined>=>{
+export const deleteImage = async(ids:string[]):Promise<Result>=>{
 
     for(const id of ids){
-
       const {singlecar}=await getsingelCar(id);
       const FrontImage=singlecar?.FrontImage
       var SupportImage=singlecar?.SupportImages
@@ -37,4 +36,5 @@ export const deleteImage = async(ids:string[]):Promise<Result|undefined>=>{
         return {success:false, result:"images are undifiend"}
       }
     }
+    return {success:false,result:"unknown error"}
   }

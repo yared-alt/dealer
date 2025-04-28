@@ -10,12 +10,12 @@ export async function DELETE(req:Request) {
         if (!ids) {
             return NextResponse.json({success:false,message:"product not found"},{status:404});
         }
-        console.log("iss",ids)
-        const result:Result|undefined=await deleteImage(ids);
+        console.log("idds",ids)
+        const result:Result=await deleteImage(ids);
 
-        if (result) {
-          const d= deleteProduct({ids,result})
-          if((await d).success){
+        if (result.success) {
+          const d=await deleteProduct(ids)
+          if(d.success){
             return NextResponse.json({success:true,message:"product deleted succesfully"},{status:200});
           }
           return NextResponse.json({success:false,message:"error occured while deleting from mongo"},{status:500});

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import Car from "@/lib/model/carModel";
 import { connect } from "@/lib/config/dbconfig";
+import pTimeout from "p-timeout";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -26,7 +27,9 @@ export async function POST(request: NextRequest) {
   
     const response=await connect()
     if (!response.success) {
-      console.log("response error object",response.error)
+      console.log("response error object",response.message)
+      return NextResponse.json({ error: "error ocured on uploding image" }, { status: 500 });
+
     }
     
     const formdata = await request.formData();
@@ -66,8 +69,8 @@ export async function POST(request: NextRequest) {
       const byte = await FrontImagefile.arrayBuffer();
       const buffer = Buffer.from(byte);
 
-      const frontresult = await new Promise<CloudinaryResult>(
-        (resolve, rejects) => {
+      const frontresult = await pTimeout(
+        new Promise<CloudinaryResult>((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
             {
               folder: "car-folder",
@@ -77,15 +80,24 @@ export async function POST(request: NextRequest) {
               ]
             },
             (error, result) => {
-              if (error) rejects(error);
-              else resolve(result as CloudinaryResult);
+              if (error) {
+                console.log("Upload error:", error);
+                reject(error);
+              } else {
+                resolve(result as CloudinaryResult);
+              }
             }
           );
-          uploadStream.end(buffer)
+          uploadStream.end(buffer);
+        }),
+        {
+          milliseconds: 60000,  // Timeout after 60s
+          message: "Cloudinary upload timed out after 60 seconds"
         }
-      )
+      );
       // console.log(frontresult)
       FrontimagePublic_id = frontresult.public_id;
+      console.log(FrontimagePublic_id, "fffffffffffffffffffff")
     } catch (error) {
       console.error("Error reading file:", error);
       return NextResponse.json({ error: "error ocured on uploding image" }, { status: 500 });
@@ -93,7 +105,6 @@ export async function POST(request: NextRequest) {
     // additinal image s upload
     // return;
     try {
-
       const supportImagesResults = await Promise.all(
         supportImages.map(async (file) => {
           const buffer = Buffer.from(await file.arrayBuffer());
@@ -135,7 +146,6 @@ export async function POST(request: NextRequest) {
         CarBrand: brandname,
         CarName:carname,
         FrontImage:frontPic.toString(),
-        // may be there is error on this i woll see later
         SupportImages: otherPic.toString(),
         Catagory: catagory,
         SubCatagory:subcatagory,
