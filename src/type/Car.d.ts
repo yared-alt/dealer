@@ -107,3 +107,20 @@ export interface SerializedProduct {
     success: boolean;
     result: any|undefined;
   }
+
+
+  
+  export interface CarSpec {
+    icon: ReactNode;
+    value: string;
+  }
+  
+  export interface CarCollectionType {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    specs: CarSpec[];
+    rentNow?: boolean;
+  }
+  

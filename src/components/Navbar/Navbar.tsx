@@ -32,8 +32,8 @@ const Navbar = () => {
       className={`fixed  w-full z-50 transition-all  duration-1000 h-auto  ${isScrolled ? "translate-y-0 bg-yellow-100 backdrop-blur-md shadow-sm text-amber-950" : "bg-yellow-50 "
         }`}
     >
-      <div className="container lg:px-16 mx-auto ">
-        <div className="hidden md:block">
+      <div className="container  mx-auto ">
+        {/* <div className="hidden md:block">
 
         <div
             className={`transition-all duration-500 ${isScrolled ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-auto"
@@ -72,10 +72,10 @@ const Navbar = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
    
 
-      <div className="flex md:px-9 pt-6 md:pt-9 pb-3 md:flex-col justify-between bg-white  sm:bg-transparent align-middle  lg:flex-row ">
+      <div className="flex md:px-9 pt-6 md:pt-3 pb-1 md:flex-col justify-between bg-white  sm:bg-transparent align-middle  lg:flex-row ">
           <div className="flex-shrink-0  w-auto my-auto ">
             <Link href="/" className="text-2xl font-bold">
               <Image

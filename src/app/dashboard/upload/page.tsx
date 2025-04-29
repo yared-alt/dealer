@@ -143,7 +143,7 @@ const page = () => {
       setLoading(true)
       const response = await fetch("/api/upload", { method: "POST", body: finalFormData })
       console.log(response)
-      if(!response.ok){
+      if (!response.ok) {
         toast.error("Enquiry sent", {
           description: "Failed to get product. please try again!",
         });
@@ -165,7 +165,7 @@ const page = () => {
 
   return (
     <form
-      className="min-h-screen py-36 bg-gray-50 p-4"
+      className="min-h-screen  bg-gray-50 p-4"
       autoComplete="off"
       onSubmit={handleFormSubmit}
       noValidate
@@ -536,7 +536,7 @@ const page = () => {
                   />
                 </label>
               </div>
-              <div className="rounded-lg bg-gray-100 overflow-hidden w-44 h-44 flex items-center justify-center border border-gray-200">
+              <div className="rounded-lg bg-gray-100 overflow-hidden w-full h-44 flex items-center justify-center border border-gray-200">
                 <img
                   src={frontImagee}
                   className="object-contain w-full h-full"
@@ -544,14 +544,14 @@ const page = () => {
                 />
               </div>
             </div>
-            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4">
+            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-y-4">
               <h2 className="text-base font-semibold text-gray-800">Support Images</h2>
               <div className="grid grid-cols-3 gap-3">
                 {supportImages.map((img, idx) => (
                   <div key={idx} className="flex flex-col items-center">
                     <label
                       htmlFor={`support-image-upload-${idx}`}
-                      className="cursor-pointer w-20 h-20 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center overflow-hidden hover:bg-gray-200"
+                      className="cursor-pointer w-full h-20 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center overflow-hidden hover:bg-gray-200"
                     >
                       <img
                         src={img}
@@ -572,22 +572,23 @@ const page = () => {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-        <div className="max-w-4xl mx-auto mt-8">
-          <div className="p-6 bg-white rounded-xl shadow-sm flex flex-col gap-4">
-            <label className="block text-xs text-gray-500 mb-1 font-bold" htmlFor="description">
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              className="w-full rounded-md border border-gray-200 px-3 py-2 min-h-[100px] bg-gray-100 text-gray-800"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Describe the car..."
-              required
-            />
+
+            <div className="w-full mx-auto ">
+              <div className="p-6 bg-white rounded-xl shadow-sm flex flex-col gap-4">
+                <label className="block text-xs text-gray-500 mb-1 font-bold" htmlFor="description">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  className="w-full rounded-md border border-gray-200 px-3 py-2 min-h-[100px] bg-gray-100 text-gray-800"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder="Describe the car..."
+                  required
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

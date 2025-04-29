@@ -1,8 +1,8 @@
 "use client"
 import React, { useState } from "react";
 import {
-  Check,Plus,Image as ImageIcon,
-  FileImage,Save,Star,
+  Check, Plus, Image as ImageIcon,
+  FileImage, Save, Star,
   CloudHail,
 } from "lucide-react";
 import { Car } from "@/type/Car";
@@ -23,7 +23,7 @@ const YEARS = Array.from({ length: 35 }, (_, i) => `${1990 + i}`);
 const SUBCATEGORIES = ["Premium", "Standard", "Budget", "Family", "Sport"];
 
 
-async function fetche(id:string) {
+async function fetche(id: string) {
   const { singlecar } = await getsingelCar(id)
   if (singlecar) {
     return singlecar;
@@ -31,13 +31,13 @@ async function fetche(id:string) {
   return false;
 }
 
-const page =async (id: string) => {
-  const data: Car | boolean =await fetche(id)
+const page = async (id: string) => {
+  const data: Car | boolean = await fetche(id)
   if (!data) {
     alert("car is not found")
     return;
   }
-  const serializedData=serializeCar(data);
+  const serializedData = serializeCar(data);
   // console.log("dddddddddddd",serializedData)
 
   console.log(serializedData.SupportImages)
@@ -74,11 +74,11 @@ const page =async (id: string) => {
     null,
   ]);
 
-supportImages.forEach(item=>{
-  if (typeof item === 'string') {
-    return item.replace("car-folderA", 'car-folder/');
-  }
-})
+  supportImages.forEach(item => {
+    if (typeof item === 'string') {
+      return item.replace("car-folderA", 'car-folder/');
+    }
+  })
 
   const editpro = async () => {
     try {
@@ -107,8 +107,8 @@ supportImages.forEach(item=>{
     if (!file) return;
     setFrontImage(URL.createObjectURL(file));
     setFrontImageFile(file);
-    console.log("frontImagee",frontImagee)
-    console.log("frontImageeFile",frontImageFile)
+    console.log("frontImagee", frontImagee)
+    console.log("frontImageeFile", frontImageFile)
   };
 
   const handleSupportImageChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,8 +121,8 @@ supportImages.forEach(item=>{
     const newFiles = [...supportImageFiles];
     newFiles[idx] = file;
     setSupportImageFiles(newFiles);
-    console.log("support",supportImages)
-    console.log("supportFile",supportImageFiles)
+    console.log("support", supportImages)
+    console.log("supportFile", supportImageFiles)
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -553,7 +553,7 @@ supportImages.forEach(item=>{
                   />
                 </label>
               </div>
-              <div className="rounded-lg bg-gray-100 overflow-hidden w-44 h-44 flex items-center justify-center border border-gray-200">
+              <div className="rounded-lg bg-gray-100 overflow-hidden w-full h-44 flex items-center justify-center border border-gray-200">
                 {
                   typeof frontImagee == "string" ? (
                     <>
@@ -575,15 +575,15 @@ supportImages.forEach(item=>{
                 }
               </div>
             </div>
-            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-4">
+            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-y-4">
               <h2 className="text-base font-semibold text-gray-800">Support Images</h2>
               <div className="grid grid-cols-3 gap-3">
                 {supportImages.map((img, idx) => (
                   <div key={idx} className="flex flex-col items-center">
-                    
+
                     <label
                       htmlFor={`support-image-upload-${idx}`}
-                      className="cursor-pointer w-20 h-20 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center overflow-hidden hover:bg-gray-200"
+                      className="cursor-pointer w-full h-20 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center overflow-hidden hover:bg-gray-200"
                     >
                       {typeof img === "string" ? (
                         <img
@@ -612,22 +612,23 @@ supportImages.forEach(item=>{
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-        <div className="max-w-4xl mx-auto mt-8">
-          <div className="p-6 bg-white rounded-xl shadow-sm flex flex-col gap-4">
-            <label className="block text-xs text-gray-500 mb-1 font-bold" htmlFor="description">
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              className="w-full rounded-md border border-gray-200 px-3 py-2 min-h-[100px] bg-gray-100 text-gray-800"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Describe the car..."
-              required
-            />
+
+            <div className="max-w-4xl mx-auto mt-8">
+              <div className="p-6 bg-white rounded-xl shadow-sm flex flex-col gap-4">
+                <label className="block text-xs text-gray-500 mb-1 font-bold" htmlFor="description">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  className="w-full rounded-md border border-gray-200 px-3 py-2 min-h-[100px] bg-gray-100 text-gray-800"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder="Describe the car..."
+                  required
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

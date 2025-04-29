@@ -158,7 +158,7 @@ const Page = () => {
           <h1 className="pt-72">Loading ...</h1>
         ) : (
 
-          <div className="min-h-screen py-36 bg-gray-50">
+          <div className="min-h-screen bg-gray-50">
             <div className="container mx-auto px-4 py-8 max-w-7xl">
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
