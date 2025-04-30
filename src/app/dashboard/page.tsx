@@ -23,6 +23,7 @@ const Page = () => {
   const [products, setProducts] = useState<Car[]>();
   const [showSort, setShowSort] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResult,setSearchResult]=useState<number>(products?.length || 0);
   const [color, setColor] = useState<string>("")
   const [category, setCatagory] = useState<string>("")
   const [condition, setCondition] = useState<string>("")

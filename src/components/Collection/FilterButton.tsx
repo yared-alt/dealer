@@ -9,11 +9,16 @@ interface FilterButtonProps {
   onClick?: () => void;
 }
 
+const price= ['Under $40', '$40-$50', '$50-$60', 'Above $60']
+const manufacture= ['Toyota', 'Mitsubishi', 'Honda', 'Mazda']
+const type= ['Sedan', 'SUV', 'Hatchback']
+const rating= ['★★★★★', '★★★★☆', '★★★☆☆']
+
 
 const FilterButton = ({ label, count = 0, isActive, onClick }:{label:string,count?:number,isActive:boolean, onClick?:()=>void}) => {
   return (
     <button
-      className={`flex items-center gap-2 px-4 py-2 rounded-full border ${
+      className={`flex items-center gap-2 px-3 py-0.5 md:px-4 md:py-2 rounded-full border ${
         isActive ? 'bg-blue-100 border-blue-500' : 'border-gray-300'
       }`}
       onClick={onClick}

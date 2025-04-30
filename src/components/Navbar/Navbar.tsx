@@ -33,47 +33,6 @@ const Navbar = () => {
         }`}
     >
       <div className="container  mx-auto ">
-        {/* <div className="hidden md:block">
-
-        <div
-            className={`transition-all duration-500 ${isScrolled ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-auto"
-            } w-full border-b border-black hidden md:flex justify-between container mx-auto px-0 lg:scroll-px-4`}
-          >
-            <div
-              className="text-2xl font-bold h-11 py-2 "
-            >
-              <Image
-                src={"/Wolisohotellogo.svg"}
-                alt="Amanuel dealer"
-                width={200}
-                height={50}
-              />
-            </div>
-
-            <div className="">
-              <div className="text-center md:text-right text-sm text-gray-600">
-                <p className="mb-4">Woliso Town, Oromia | Ethiopia</p>
-                <div className="flex flex-col md:flex-row md:justify-end gap-4 md:gap-8">
-                  <Link href="tel:+35020079000" className="flex items-center justify-center md:justify-end gap-2 hover:text-gray-900 transition-colors">
-                    <Phone size={16} />
-                    <span>+251 115 511 417 </span>
-                  </Link>
-
-                  <Link href="#" className="flex items-center justify-center md:justify-end gap-2 hover:text-gray-900 transition-colors">
-                    <Mail size={16} />
-                    <span>Email us</span>
-                  </Link>
-
-                  <Link href="#" className="flex items-center justify-center md:justify-end gap-2 hover:text-gray-900 transition-colors">
-                    <MapPin size={16} />
-                    <span>Directions</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-   
 
       <div className="flex md:px-9 pt-6 md:pt-3 pb-1 md:flex-col justify-between bg-white  sm:bg-transparent align-middle  lg:flex-row ">
           <div className="flex-shrink-0  w-auto my-auto ">
