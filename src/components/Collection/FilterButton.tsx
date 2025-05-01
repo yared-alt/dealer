@@ -9,7 +9,7 @@ interface FilterButtonProps {
   onClick?: () => void;
 }
 
-const price= ['Under $40', '$40-$50', '$50-$60', 'Above $60']
+const price= [' under $1,000,000', '$1,000,000-3,000,000', '$3,000,000-5,000,000','$5,000,000-10,000,000',' above $10,000,000']
 const manufacture= ['Toyota', 'Mitsubishi', 'Honda', 'Mazda']
 const type= ['Sedan', 'SUV', 'Hatchback']
 const rating= ['★★★★★', '★★★★☆', '★★★☆☆']

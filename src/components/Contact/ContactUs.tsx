@@ -47,21 +47,11 @@ function ContactUs() {
             <Mail size={18} className="text-gray-600" />
             <span className="text-sm">
               <strong>General Enquiries: </strong>
-              <a href="mailto:info@yourcompanywebsite.com" className="hover:text-gray-900 transition-colors">
-                info@yourcompanywebsite.com
+              <a href="mailto:info@amanual.com" className="hover:text-gray-900 transition-colors">
+                info@amanual.com
               </a>
             </span>
           </div>
-
-          {/* <div className="flex items-center justify-center md:justify-start gap-2">
-             <Mail size={18} className="text-gray-600" />
-             <span className="text-sm">
-               <strong>Media Enquiries: </strong>
-               <a href="mailto:media@yourcompanywebsite.com" className="hover:text-gray-900 transition-colors">
-                 media@yourcompanywebsite.com
-               </a>
-             </span>
-           </div> */}
         </div>
       </div>
     </div>

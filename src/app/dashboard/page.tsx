@@ -20,8 +20,8 @@ const Page = () => {
   const [page, setPage] = useState<number>(1)
   const [totalPages, setTotalPages] = useState<number>(0)
   const [paginetion, setPaginetion] = useState<Pagination>()
-  const [products, setProducts] = useState<Car[]>();
   const [showSort, setShowSort] = useState<boolean>(false);
+  const [products, setProducts] = useState<Car[]>();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResult,setSearchResult]=useState<number>(products?.length || 0);
   const [color, setColor] = useState<string>("")

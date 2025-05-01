@@ -84,7 +84,7 @@ export function Footer() {
             <h3 className="text-base font-bold text-gray-800 mt-10 mb-4">Where Do You Find Us</h3>
             <div className="flex space-x-2 w-[100%]">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.64952845431!2d37.96409237459556!3d8.533364491509507!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164d283d3fa549ad%3A0x5746e6bcb11a8957!2sHoteela%20Walisoo!5e0!3m2!1sen!2set!4v1744747786087!5m2!1sen!2set"
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1970.3483110731177!2d38.747158!3d9.000038!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b8513494db273%3A0x88235dbe171c4224!2sDiplomat%20Building!5e0!3m2!1sen!2srs!4v1746128330738!5m2!1sen!2srs"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
