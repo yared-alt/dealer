@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, LogIn, User } from "lucide-react";
+import { Button } from "../ui/button";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,18 +33,30 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center">
             <ul className="flex space-x-6 uppercase text-sm font-medium">
               <li><Link href="/" className="hover:text-primary">Home</Link></li>
               <li><Link href="/about" className="hover:text-primary">About</Link></li>
               <li><Link href="/collection" className="hover:text-primary">Our Collection</Link></li>
               <li><Link href="/contact" className="hover:text-primary">Contact</Link></li>
-              <li><Link href="/signin" className="hover:text-yellow tracking-wider bg-amber-900 py-2 text-white px-2 rounded-sm">SignIn</Link></li>
             </ul>
           </nav>
+          
+          <div className="hidden lg:flex items-center space-x-3 ml-6">
+            <Button asChild variant="ghost" size="sm" className="font-medium">
+              <Link href="/auth/login" className="flex items-center">
+                <LogIn className="mr-1" size={16} />
+                Login
+              </Link>
+            </Button>
+            <Button asChild size="sm" className="font-medium">
+              <Link href="/auth/signup" className="flex items-center">
+                <User className="mr-1" size={16} />
+                Sign Up
+              </Link>
+            </Button>
+          </div>
 
-          {/* Mobile Navigation Button */}
           <button className="lg:hidden" onClick={toggleMenu}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -65,7 +78,19 @@ const Navbar = () => {
                 <Phone size={16} className="mr-1" />
                 <span>0911-204-530</span>
               </a>
-              <p><Link href="/auth/signin" className="block py-2 hover:text-yellow tracking-wider bg-amber-900 text-center">SignIn</Link></p>
+              <p> 
+                <li className="border-t border-gray-100 mt-2 pt-2">
+                <Link href="/auth/login" className="flex items-center py-2 hover:text-primary">
+                  <LogIn className="mr-2" size={16} />
+                  Login
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/signup" className="flex items-center py-2 hover:text-primary">
+                  <User className="mr-2" size={16} />
+                  Sign Up
+                </Link>
+              </li></p>
             </div>
           </nav>
         </div>

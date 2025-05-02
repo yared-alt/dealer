@@ -15,35 +15,31 @@ export async function GET(req:Request) {
       
  
         const {searchParams} = new URL(req.url)
-        const color=searchParams.get("color") 
-        const category=searchParams.get("category") 
-        const model=searchParams.get("model") 
+        const price=searchParams.get("price") 
+        const brand=searchParams.get("brand")
+        const type=searchParams.get("type")
         const condition=searchParams.get("condition")
         const year=searchParams.get("year");
         const page=Number(searchParams.get("page")) || 1;
-        const limit=Number(searchParams.get("limit")) || 10; 
+        const limit=Number(searchParams.get("limit")) || 30; 
         const skip=(page - 1) * limit;
-
 
       const filter :Filter={}
 
-      // color ? console.log("color",true):console.log("color",false)
-      // category ? console.log("category",true):console.log("category",false)
-      // condition ? console.log("condition",true):console.log("condition",false)
-      // year ? console.log("year",true):console.log("year",false)
-
       
-      if (color) filter.Color = color.toString().toLowerCase();
-      if (category) filter.Catagory = category.toString();
-      if (model) filter.Model = Number(model);
+      if (type) filter.Catagory = type.toString().toLowerCase();
+      if (brand) filter.Catagory = brand.toString();
+      if (price) filter.Price = Number(price);
       if (condition) filter.Condition = condition.toString();
       if (year) filter.Year = Number(year);
 
-      // console.log("filter",filter)
+      console.log("filter",filter)
     const [cars, totalcount] :[cars:car[],totalcount:number]= await Promise.all([
         Car.find(filter).skip(skip).limit(limit),
         Car.countDocuments(filter)
       ]);
+
+      console.log(cars)
 
       if (totalcount == 0) {
         return NextResponse.json({ success: false, message: "Cars are not found" }, { status: 404 });

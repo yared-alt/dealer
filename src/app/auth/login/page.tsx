@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation"; 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-// Define the schema for form validation
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(8, {
@@ -30,9 +29,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const page = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useRouter();
   
-  // Initialize the form with react-hook-form and zod validation
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {

@@ -1,27 +1,22 @@
 import React from 'react';
-import { CarCollectionType } from '@/type/Car';
+import { Car } from '@/type/Car';
 import Image from 'next/image';
 
-interface CarCardProps {
-  car: CarCollectionType;
-  highlighted?: boolean;
-}
 
-const CarCard: React.FC<CarCardProps> = ({ car, highlighted = false }) => {
-  const { name, price, image, specs, rentNow } = car;
+const CarCard: React.FC<Car> = (car) => {
+  const { CarName, CarBrand, Price, FrontImage, Size,  } = car;
 
   return (
-    <div className={`bg-white rounded-lg p-6 hover:py-8 shadow-sm transition-all ${highlighted ? 'border-2 border-rentNow' : ''}`}>
-      <h3 className="text-lg font-medium mb-2">{name}</h3>
+    <div className={`bg-white rounded-lg p-6 hover:py-8 shadow-sm transition-all hover:border-2 border-rentNow `}>
+      <h3 className="text-lg font-medium mb-2">{CarName}</h3>
       <div className="mb-4">
-        <span className="text-3xl font-bold">${price}</span>
-        <span className="text-gray-500 text-sm">/day</span>
+        <span className="text-3xl font-bold">${Price}</span>
       </div>
       
       <div className="w-full mb-4">
         <Image
-          src={image} 
-          alt={name} 
+          src={`https://res.cloudinary.com/dr1ejpdn8/image/upload/${FrontImage}`} 
+          alt={CarName} 
           width={500}
           height={500}
           className="w-full h-auto object-contain" 
